@@ -1,0 +1,9 @@
+transformers
+nltk
+datasets
+wandb
+torch
+python-dotenv
+pickle
+accelerate
+sentencepiece
