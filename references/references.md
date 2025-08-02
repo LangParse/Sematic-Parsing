@@ -1,0 +1,3 @@
+- [Semantic Parsing: Intro and Seq2Seq Model](https://guide.allennlp.org/semantic-parsing-seq2seq#6)
+- [Measuring Alignment Bias in Neural Seq2seq Semantic Parsers](https://aclanthology.org/2022.starsem-1.17/)
+- [seq2seq-for-semantic-parsing](https://github.com/dinhngoc267/seq2seq-for-semantic-parsing)

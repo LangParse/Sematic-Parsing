@@ -1,9 +1,5 @@
 transformers
-nltk
 datasets
-wandb
-torch
+sentencepiece
 python-dotenv
 pickle
-accelerate
-sentencepiece
