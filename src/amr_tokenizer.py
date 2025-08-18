@@ -31,6 +31,7 @@ class AMRTokenizer:
             padding="max_length",
             truncation=True,
             max_length=self.max_length_input,
+            return_tensors="pt",
         )
 
         # Tokenize ouput graphs if preset (train/val splits)
@@ -40,6 +41,7 @@ class AMRTokenizer:
                 padding="max_length",
                 truncation=True,
                 max_length=self.max_length_ouput,
+                return_tensors="pt",
             )
             model_inputs["labels"] = labels["input_ids"]
 

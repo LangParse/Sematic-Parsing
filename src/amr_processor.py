@@ -1,27 +1,10 @@
 import concurrent.futures
 import json
 import logging
-import re
 from pathlib import Path
-from typing import Callable, Dict, Generator, List, Union, Optional, cast
+from typing import Dict, Generator, List, Union, Optional, cast
 
 from datasets import Dataset, DatasetDict
-
-
-def _default_vi_segment(text: str) -> List[str]:
-    """Default: Không segment, giữ nguyên text raw cho ViT5 hoặc model subword-based."""
-    return [text]  # Trả về list với text gốc
-
-
-def _segment_amr_output(text: str) -> List[str]:
-    """Segment AMR string while preserving constructs like :ARG1(."""
-    try:
-        text = text.replace("\n", " ")
-        pattern = r"(:?\w+)\("
-        return re.sub(pattern, r" \1(", text).split()
-    except Exception as e:
-        logging.error(f"Error segmenting AMR output: {e}")
-        return []
 
 
 def _parse_amr_file(file_path: Path) -> List[Dict[str, str]]:
@@ -57,29 +40,15 @@ def _parse_amr_file(file_path: Path) -> List[Dict[str, str]]:
         return []
 
 
-def _process_file(
-    file_path: Path, word_segmenter: Callable[[str], List[str]]
-) -> List[Dict[str, str]]:
+def _process_file(file_path: Path) -> List[Dict[str, str]]:
     """Process a single AMR file and segment its content."""
-    entries = _parse_amr_file(file_path)
-    return [
-        {
-            "input": " ".join(
-                word_segmenter(entry["input"])
-            ),  # Nếu no segment, giữ nguyên
-            "output": " ".join(_segment_amr_output(entry["output"])),
-        }
-        for entry in entries
-        if entry["input"] and entry["output"]
-    ]
+    return _parse_amr_file(file_path)
 
 
 class AMRProcessor:
     """A class to process and tokenize AMR files into JSONL or Hugging Face Dataset format."""
 
-    def __init__(self, word_segmenter: Optional[Callable[[str], List[str]]] = None):
-        """Initialize with an optional input tokenizer. Default: no segmentation."""
-        self.word_segmenter = word_segmenter or _default_vi_segment
+    def __init__(self):
         self.logger = self._setup_logger()
 
     @staticmethod
@@ -95,15 +64,13 @@ class AMRProcessor:
 
         return logger
 
-    def segment_to_jsonl(self, files: List[Path]) -> List[Dict[str, str]]:
-        """Segment AMR files into JSON-compatible dictionaries."""
+    def file_to_jsonl(self, files: List[Path]) -> List[Dict[str, str]]:
+        """Process AMR files into JSON-compatible dictionaries."""
         self.logger.info(f"Processing {len(files)} file(s) in parallel...")
         combined_data: List[Dict[str, str]] = []
 
         with concurrent.futures.ProcessPoolExecutor() as executor:
-            future_to_file = {
-                executor.submit(_process_file, f, self.word_segmenter): f for f in files
-            }
+            future_to_file = {executor.submit(_process_file, f): f for f in files}
             for future in concurrent.futures.as_completed(future_to_file):
                 file_path = future_to_file[future]
                 try:
@@ -135,7 +102,7 @@ class AMRProcessor:
                 for line in f:
                     sentence = line.strip()
                     if sentence:
-                        yield {"input": " ".join(self.word_segmenter(sentence))}
+                        yield {"input": sentence}
         except Exception as e:
             self.logger.error(f"Error processing test file {file_path}: {e}")
             return
@@ -169,12 +136,12 @@ class AMRProcessor:
     ) -> DatasetDict:
         """Process AMR train/val/test into a Hugging Face DatasetDict."""
         train_files = self._collect_files(train_path)
-        train_val_data = self.segment_to_jsonl(train_files)
+        train_val_data = self.file_to_jsonl(train_files)
 
         # Split train/val
         if val_path:
             val_files = self._collect_files(val_path)
-            val_data = self.segment_to_jsonl(val_files)
+            val_data = self.file_to_jsonl(val_files)
             train_data = train_val_data
         else:
             if len(train_val_data) < 2:
