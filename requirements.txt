@@ -1,0 +1,5 @@
+transformers
+datasets
+sentencepiece
+python-dotenv
+pickle
