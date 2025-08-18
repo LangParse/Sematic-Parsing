@@ -1,4 +1,5 @@
 import os
+import torch
 from typing import Dict
 import evaluate
 import wandb
@@ -9,7 +10,7 @@ from transformers import (
     Seq2SeqTrainingArguments,
 )
 
-from amr_tokenizer import AMRTokenizer
+from src.amr_tokenizer import AMRTokenizer
 
 
 class AMRTrainer:
@@ -53,7 +54,8 @@ class AMRTrainer:
         self.tokenized_dataset = self.amr_tokenizer.tokenize_dataset(self.dataset)
 
         # Load model
-        self.model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.model = AutoModelForSeq2SeqLM.from_pretrained(model_name).to(device)
 
         # Init wandb if needed
         if self.use_wandb:
