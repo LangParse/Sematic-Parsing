@@ -1,5 +1,8 @@
-transformers
-datasets
-sentencepiece
-python-dotenv
-pickle
+accelerate>=1.10.0
+datasets>=4.0.0
+evaluate>=0.4.5
+sentencepiece>=0.2.1
+torch>=2.8.0
+transformers>=4.55.1
+wandb>=0.21.1
+
