@@ -17,3 +17,19 @@
 # # If you want to segment the text, you can use the tokenizer's `tokenize` method
 # tokens = amr_tok.tokenizer.tokenize(text)
 # print("Segmented tokens:", tokens)
+
+from pathlib import Path
+import penman
+from src.amr_processor import AMRProcessor
+
+processor = AMRProcessor()
+data = processor.file_to_jsonl(
+    [Path("./data/train/train_split.txt")]
+)  # Hoặc path file train
+invalid = []
+for item in data:
+    try:
+        penman.decode(item["output"])
+    except:
+        invalid.append(item["input"])  # Log sentence có AMR sai
+print("Invalid AMRs:", invalid)

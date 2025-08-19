@@ -1,5 +1,9 @@
-from typing import Dict, Optional
+import logging
+import os
 
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
+
+from typing import Dict, Optional
 import torch
 import wandb
 from transformers import (
@@ -12,6 +16,7 @@ from transformers import (
 from peft import LoraConfig, get_peft_model  # Thêm PEFT LoRA
 from amrlib.evaluate.smatch_enhanced import compute_smatch
 import optuna  # Thêm cho tune
+import penman
 
 from src.amr_tokenizer import AMRTokenizer
 
@@ -70,7 +75,7 @@ class AMRTrainer:
             wandb.init(project="amr_parser", name=self.run_name)
 
     def _compute_metrics(self, eval_preds) -> Dict[str, float]:
-        """Compute Smatch after evaluation."""
+        """Compute Smatch after evaluation, with error handling for ill-formatted AMR."""
         preds, labels = eval_preds
         tokenizer = self.amr_tokenizer.tokenizer
 
@@ -87,9 +92,28 @@ class AMRTrainer:
             decoded_preds = decoded_preds[: self.eval_limit]
             decoded_labels = decoded_labels[: self.eval_limit]
 
+        # Filter valid AMR pairs
+        valid_preds = []
+        valid_labels = []
+        for idx, (pred, label) in enumerate(zip(decoded_preds, decoded_labels)):
+            try:
+                # Validate format với penman
+                penman.decode(pred)  # Check pred
+                penman.decode(label)  # Check label (dù gold ok, nhưng double-check)
+                valid_preds.append(pred)
+                valid_labels.append(label)
+            except (penman.DecodeError, Exception) as e:
+                error_msg = f"Skipping ill-formatted AMR at index {idx}: Pred='{pred[:100]}...', Label='{label[:100]}...'. Error: {e}"
+                print(error_msg)  # In console
+                logging.error(error_msg)  # Ghi file amr_errors.log
+
+        if not valid_preds:
+            print("All AMRs invalid - Returning zero scores. Check model generation.")
+            return {"smatch_f1": 0.0, "smatch_precision": 0.0, "smatch_recall": 0.0}
+
         # Tính Smatch (amrlib wrap smatch)
         prec, rec, f1 = compute_smatch(
-            decoded_preds, decoded_labels
+            valid_preds, valid_labels
         )  # Trả về dict với f1, precision, recall
 
         return {
@@ -133,6 +157,8 @@ class AMRTrainer:
             learning_rate=learning_rate,  # Set explicit
             lr_scheduler_type="linear",  # Thêm scheduler
             warmup_steps=100,  # Warmup
+            generation_num_beams=6,  # Thêm để generate AMR tốt hơn, giảm ill-formatted
+            generation_max_length=self.amr_tokenizer.max_length_output,
         )
 
         trainer = Seq2SeqTrainer(
