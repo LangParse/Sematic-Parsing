@@ -6,6 +6,7 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 from typing import Dict, Optional
 import torch
 import wandb
+import numpy as np
 from transformers import (
     AutoModelForSeq2SeqLM,
     DataCollatorForSeq2Seq,
@@ -74,19 +75,57 @@ class AMRTrainer:
             wandb.login(key="449ae55008e2e327116d3d500dfda77cdf77ce70")
             wandb.init(project="amr_parser", name=self.run_name)
 
+    def _sanitize_token_ids(self, token_ids, vocab_size):
+        """Sanitize token IDs to prevent overflow errors."""
+        if isinstance(token_ids, torch.Tensor):
+            token_ids = token_ids.cpu().numpy()
+
+        # Clip values to valid range
+        token_ids = np.clip(token_ids, 0, vocab_size - 1)
+
+        # Convert back to int32 to prevent overflow
+        token_ids = token_ids.astype(np.int32)
+
+        return token_ids.tolist()
+
+    def _safe_decode(self, token_ids, tokenizer, skip_special_tokens=True):
+        """Safely decode token IDs with error handling."""
+        try:
+            vocab_size = tokenizer.vocab_size
+            sanitized_ids = self._sanitize_token_ids(token_ids, vocab_size)
+            return tokenizer.decode(
+                sanitized_ids, skip_special_tokens=skip_special_tokens
+            )
+        except Exception as e:
+            logging.warning(f"Decode error: {e}. Returning empty string.")
+            return ""
+
     def _compute_metrics(self, eval_preds) -> Dict[str, float]:
         """Compute Smatch after evaluation, with error handling for ill-formatted AMR."""
         preds, labels = eval_preds
         tokenizer = self.amr_tokenizer.tokenizer
 
-        # Decode predictions
-        decoded_preds = tokenizer.batch_decode(preds, skip_special_tokens=True)
+        # Safely decode predictions with error handling
+        decoded_preds = []
+        for pred in preds:
+            decoded_pred = self._safe_decode(pred, tokenizer)
+            decoded_preds.append(decoded_pred)
 
-        # Decode labels (ignore -100)
-        decoded_labels = [[id for id in label if id != -100] for label in labels]
-        decoded_labels = tokenizer.batch_decode(
-            decoded_labels, skip_special_tokens=True
-        )
+        # Safely decode labels (ignore -100)
+        decoded_labels = []
+        for label in labels:
+            # Filter out -100 tokens
+            filtered_label = [id for id in label if id != -100]
+            if filtered_label:  # Only decode if there are valid tokens
+                decoded_label = self._safe_decode(filtered_label, tokenizer)
+                decoded_labels.append(decoded_label)
+            else:
+                decoded_labels.append("")
+
+        # Ensure we have the same number of predictions and labels
+        min_len = min(len(decoded_preds), len(decoded_labels))
+        decoded_preds = decoded_preds[:min_len]
+        decoded_labels = decoded_labels[:min_len]
 
         if self.eval_limit is not None:
             decoded_preds = decoded_preds[: self.eval_limit]
@@ -96,6 +135,13 @@ class AMRTrainer:
         valid_labels = []
 
         for idx, (pred, label) in enumerate(zip(decoded_preds, decoded_labels)):
+            # Skip empty predictions or labels
+            if not pred.strip() or not label.strip():
+                logging.warning(f"Empty pred or label at index {idx}")
+                valid_preds.append("(x / noop)")
+                valid_labels.append(label if label.strip() else "(x / noop)")
+                continue
+
             try:
                 # chỉ check pred, gold luôn giữ nguyên
                 penman.decode(pred)
@@ -108,13 +154,21 @@ class AMRTrainer:
                 # fallback: thêm dummy graph để không bị mất mẫu
                 valid_preds.append("(x / noop)")
                 valid_labels.append(label)
+            except Exception as e:
+                logging.error(f"Unexpected error at index {idx}: {e}")
+                valid_preds.append("(x / noop)")
+                valid_labels.append(label if label else "(x / noop)")
 
         if not valid_preds:
             print("All preds invalid - Returning zero scores.")
             return {"smatch_f1": 0.0, "smatch_precision": 0.0, "smatch_recall": 0.0}
 
         # Tính Smatch (amrlib wrap smatch)
-        prec, rec, f1 = compute_smatch(valid_preds, valid_labels)
+        try:
+            prec, rec, f1 = compute_smatch(valid_preds, valid_labels)
+        except Exception as e:
+            logging.error(f"Error computing Smatch: {e}")
+            return {"smatch_f1": 0.0, "smatch_precision": 0.0, "smatch_recall": 0.0}
 
         return {
             "smatch_f1": f1,
@@ -159,6 +213,9 @@ class AMRTrainer:
             warmup_steps=100,  # Warmup
             generation_num_beams=6,  # Thêm để generate AMR tốt hơn, giảm ill-formatted
             generation_max_length=self.amr_tokenizer.max_length_output,
+            # Add these parameters to help with stability
+            dataloader_pin_memory=False,  # Reduce memory issues
+            eval_delay=500,  # Delay first evaluation
         )
 
         trainer = Seq2SeqTrainer(
