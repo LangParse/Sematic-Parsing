@@ -92,29 +92,29 @@ class AMRTrainer:
             decoded_preds = decoded_preds[: self.eval_limit]
             decoded_labels = decoded_labels[: self.eval_limit]
 
-        # Filter valid AMR pairs
         valid_preds = []
         valid_labels = []
+
         for idx, (pred, label) in enumerate(zip(decoded_preds, decoded_labels)):
             try:
-                # Validate format với penman
-                penman.decode(pred)  # Check pred
-                penman.decode(label)  # Check label (dù gold ok, nhưng double-check)
+                # chỉ check pred, gold luôn giữ nguyên
+                penman.decode(pred)
                 valid_preds.append(pred)
                 valid_labels.append(label)
-            except (penman.DecodeError, Exception) as e:
-                error_msg = f"Skipping ill-formatted AMR at index {idx}: Pred='{pred[:100]}...', Label='{label[:100]}...'. Error: {e}"
-                print(error_msg)  # In console
-                logging.error(error_msg)  # Ghi file amr_errors.log
+            except penman.DecodeError as e:
+                logging.error(
+                    f"Invalid pred at index {idx}: '{pred[:100]}...' (Error: {e})"
+                )
+                # fallback: thêm dummy graph để không bị mất mẫu
+                valid_preds.append("(x / noop)")
+                valid_labels.append(label)
 
         if not valid_preds:
-            print("All AMRs invalid - Returning zero scores. Check model generation.")
+            print("All preds invalid - Returning zero scores.")
             return {"smatch_f1": 0.0, "smatch_precision": 0.0, "smatch_recall": 0.0}
 
         # Tính Smatch (amrlib wrap smatch)
-        prec, rec, f1 = compute_smatch(
-            valid_preds, valid_labels
-        )  # Trả về dict với f1, precision, recall
+        prec, rec, f1 = compute_smatch(valid_preds, valid_labels)
 
         return {
             "smatch_f1": f1,
