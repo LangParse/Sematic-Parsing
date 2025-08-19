@@ -12,35 +12,36 @@ class AMRTokenizer:
     def __init__(
         self,
         model_name: str = "VietAI/vit5-base",
-        max_length_input: int = 128,
-        max_length_output: int = 256,
+        max_length_input: int = 256,
+        max_length_output: int = 512,
         save_dir: Optional[Union[str, Path]] = None,
     ):
         self.tokenizer: PreTrainedTokenizerBase = AutoTokenizer.from_pretrained(
             model_name
         )
         self.max_length_input = max_length_input
-        self.max_length_ouput = max_length_output
+        self.max_length_output = max_length_output
         self.save_dir = Path(save_dir) if save_dir else None
 
     def _tokenize_batch(self, batch: Dict[str, Any]) -> BatchEncoding:
         """Tokenize both input (Vietnamese sentence) and output (AMR graph) for a batch."""
-        # Tokenize input sentences
+        # Tokenize input sentences with prefix "semantic parse: " để prompt tốt hơn
+        inputs = ["semantic parse: " + text for text in batch["input"]]
         model_inputs = self.tokenizer(
-            batch["input"],
+            inputs,
             padding="max_length",
             truncation=True,
             max_length=self.max_length_input,
             return_tensors="pt",
         )
 
-        # Tokenize ouput graphs if preset (train/val splits)
+        # Tokenize output graphs if present (train/val splits)
         if "output" in batch:
             labels = self.tokenizer(
                 batch["output"],
                 padding="max_length",
                 truncation=True,
-                max_length=self.max_length_ouput,
+                max_length=self.max_length_output,
                 return_tensors="pt",
             )
             model_inputs["labels"] = labels["input_ids"]

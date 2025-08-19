@@ -7,8 +7,13 @@ from typing import Dict, Generator, List, Union, Optional, cast
 from datasets import Dataset, DatasetDict
 
 
-def _parse_amr_file(file_path: Path) -> List[Dict[str, str]]:
-    """Parse an AMR text file into input-output pairs."""
+def _augment_sentence(sentence: str) -> List[str]:
+    # Placeholder: Thay bằng call LLM để paraphrase
+    return [sentence]  # Hoặc [sentence, "paraphrase1", "paraphrase2"]
+
+
+def _parse_amr_file(file_path: Path, augment: bool = False) -> List[Dict[str, str]]:
+    """Parse an AMR text file into input-output pairs, with optional augmentation."""
     entries: List[Dict[str, str]] = []
     sentence = None
     amr_lines = []
@@ -23,16 +28,28 @@ def _parse_amr_file(file_path: Path) -> List[Dict[str, str]]:
             for line in lines:
                 if line.startswith("#::snt"):
                     if sentence and amr_lines:
-                        entries.append(
-                            {"input": sentence, "output": "\n".join(amr_lines)}
-                        )
+                        if augment:
+                            for aug_sent in _augment_sentence(sentence):
+                                entries.append(
+                                    {"input": aug_sent, "output": "\n".join(amr_lines)}
+                                )
+                        else:
+                            entries.append(
+                                {"input": sentence, "output": "\n".join(amr_lines)}
+                            )
                     sentence = line[7:].strip()
                     amr_lines = []
                 elif line and sentence is not None:
                     amr_lines.append(line)
 
             if sentence and amr_lines:
-                entries.append({"input": sentence, "output": "\n".join(amr_lines)})
+                if augment:
+                    for aug_sent in _augment_sentence(sentence):
+                        entries.append(
+                            {"input": aug_sent, "output": "\n".join(amr_lines)}
+                        )
+                else:
+                    entries.append({"input": sentence, "output": "\n".join(amr_lines)})
 
         return entries
     except Exception as e:
@@ -40,9 +57,9 @@ def _parse_amr_file(file_path: Path) -> List[Dict[str, str]]:
         return []
 
 
-def _process_file(file_path: Path) -> List[Dict[str, str]]:
+def _process_file(file_path: Path, augment: bool = False) -> List[Dict[str, str]]:
     """Process a single AMR file and segment its content."""
-    return _parse_amr_file(file_path)
+    return _parse_amr_file(file_path, augment=augment)
 
 
 class AMRProcessor:
@@ -54,23 +71,28 @@ class AMRProcessor:
     @staticmethod
     def _setup_logger() -> logging.Logger:
         logger = logging.getLogger("AMRProcessor")
-        logger.setLevel(logging.INFO)
+        logger.setLevel(logging.DEBUG)  # Tăng level để log chi tiết hơn
         handler = logging.StreamHandler()
         handler.setFormatter(
             logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
         )
         if not logger.hasHandlers():
             logger.addHandler(handler)
-
         return logger
 
-    def file_to_jsonl(self, files: List[Path]) -> List[Dict[str, str]]:
-        """Process AMR files into JSON-compatible dictionaries."""
-        self.logger.info(f"Processing {len(files)} file(s) in parallel...")
+    def file_to_jsonl(
+        self, files: List[Path], augment: bool = False
+    ) -> List[Dict[str, str]]:
+        """Process AMR files into JSON-compatible dictionaries, with optional augmentation."""
+        self.logger.info(
+            f"Processing {len(files)} file(s) in parallel... Augment: {augment}"
+        )
         combined_data: List[Dict[str, str]] = []
 
         with concurrent.futures.ProcessPoolExecutor() as executor:
-            future_to_file = {executor.submit(_process_file, f): f for f in files}
+            future_to_file = {
+                executor.submit(_process_file, f, augment): f for f in files
+            }
             for future in concurrent.futures.as_completed(future_to_file):
                 file_path = future_to_file[future]
                 try:

@@ -1,506 +1,770 @@
-# Trước khi chạy code lưu ý:
-# Thay thế đường dẫn "/content/drive/MyDrive/Colab Notebooks/Semantic Parsing/" bằng đường dẫn hiện tại trên GG Drive của từng người để không bị báo lỗi File not Found
-# Ví dụ: Đường dẫn trên GG Drive của thư mục chứa toàn bộ Project và các file dữ liệu là "/content/drive/OtherDriveName/Project/AMR/"
-# Replace "/content/drive/MyDrive/Colab Notebooks/Semantic Parsing/" bằng "/content/drive/OtherDriveName/Project/AMR/"
-# File training ban đầu của Ban Tổ Chức là 2 file text. Anh đã gộp lại thành 1 file và đặt tên thành train_amr.txt. Bỏ file này vào đúng đường dẫn /content/drive/OtherDriveName/Project/AMR/ mới chạy được Module 1
-# Thứ tự tạo các file như sau:
-# Module 1: Input file train_amr.txt để làm sạch dữ liệu và lưu thành file input_amr.txt
-# Module 2: Input file input_amr.txt để tạo thành file JSON (amr_data.json)
-# Module 3: Input file amr_data,json để Tokenize dữ liệu phục vụ cho mô hình training
-# Module 4: Từ dữ liệu đã Tokenize, tiến trình training bắt đầu. Nhúng chức năng wandb để theo dõi tiến trình học. Cần đăng ký tài khoản wandb để lấy API (search GG)
-# Các module còn lại không tạo ra file.
+import json
+import logging
+from pathlib import Path
+from typing import Dict, List, Optional, Tuple
 
-# =======================================================
-# 📘 MODULE 1: Làm sạch và chuẩn hóa dữ liệu AMR đầu vào
-# =======================================================
-
-# =========================
-# 📦 IMPORT THƯ VIỆN
-# =========================
-import os
-# 📌 Nội dung: Thư viện hỗ trợ thao tác với đường dẫn file và thư mục
-# 🎯 Mục đích: Đảm bảo việc đọc/ghi file ở đúng vị trí với tên chuẩn
-# ✅ Kết quả: Có thể trích xuất thư mục của file gốc và lưu output vào cùng thư mục
+# Third-party imports
+import wandb
+from datasets import Dataset
+from nltk.translate.bleu_score import sentence_bleu
+from transformers import (
+    AutoTokenizer,
+    Seq2SeqTrainer,
+    Seq2SeqTrainingArguments,
+    T5ForConditionalGeneration,
+)
 
 
-# =========================
-# 🧼 HÀM XỬ LÝ FILE AMR
-# =========================
-def clean_amr_file(input_file_path):
-    """
-    📌 Nội dung: Chuẩn hóa file AMR đầu vào để dễ xử lý về sau.
-    🎯 Mục đích: Gom nhóm mỗi câu tiếng Việt với sơ đồ AMR tương ứng thành 1 block, phân cách bằng dòng '---'.
-    ✅ Kết quả: Tạo file 'input_amr.txt' ở cùng thư mục, đã sẵn sàng để token hóa (Module 2).
-    """
+# ======================
+# CONFIGURATION CLASS
+# ======================
+class Config:
+    """Centralized configuration for the AMR pipeline"""
 
-    # ------------------------------------
-    # Bước 1: Lấy thư mục của file đầu vào
-    # ------------------------------------
-    dir_path = os.path.dirname(input_file_path)
-    # 📌 Nội dung: Tách phần thư mục từ đường dẫn gốc
-    # 🎯 Mục đích: Để sau đó có thể tạo file output cùng thư mục
-    # ✅ Kết quả: Biến `dir_path` chứa đường dẫn thư mục file gốc
+    # Paths (update these according to your Google Drive structure)
+    BASE_DIR = "/content/drive/MyDrive/CITD/semantic-parsing"
+    DATA_DIR = f"{BASE_DIR}/data/train"
+    MODEL_DIR = f"{BASE_DIR}/models"
+    LOG_DIR = f"{BASE_DIR}/logs"
 
-    # -------------------------------------
-    # Bước 2: Xác định đường dẫn file output
-    # -------------------------------------
-    output_file_path = os.path.join(dir_path, "input_amr.txt")
-    # 📌 Nội dung: Gộp đường dẫn thư mục với tên file mới
-    # 🎯 Mục đích: Đặt tên thống nhất cho file AMR đã chuẩn hóa
-    # ✅ Kết quả: File output sẽ nằm ở cùng thư mục với tên rõ ràng
+    # File names
+    RAW_AMR_FILE = "train_amr_1.txt"
+    CLEANED_AMR_FILE = "input_amr.txt"
+    JSON_DATA_FILE = "train_amr_1.json"
+    TOKENIZED_DATA_FILE = "tokenized_data.txt"
 
-    # ------------------------------------------
-    # Bước 3: Đọc toàn bộ nội dung từ file gốc
-    # ------------------------------------------
-    with open(input_file_path, 'r', encoding='utf-8') as f:
-        lines = f.readlines()
-    # 📌 Nội dung: Đọc từng dòng từ file
-    # 🎯 Mục đích: Chuẩn bị dữ liệu để gom theo từng đoạn AMR
-    # ✅ Kết quả: Danh sách `lines` chứa toàn bộ nội dung của file
+    # Model settings
+    MODEL_NAME = "VietAI/vit5-base"
+    OUTPUT_MODEL_DIR = f"{MODEL_DIR}/amr_model"
 
-    # ------------------------------------------
-    # Bước 4: Gom nhóm các đoạn AMR theo từng câu
-    # ------------------------------------------
-    blocks = []          # 📌 Danh sách chứa các block gồm câu và AMR
-    current_block = []   # 📌 Danh sách tạm để gom từng block
+    # Training parameters
+    BATCH_SIZE = 4
+    NUM_EPOCHS = 10
+    MAX_LENGTH = 512
+    LOGGING_STEPS = 500
+    SAVE_STEPS = 200
+    SAVE_TOTAL_LIMIT = 2
 
-    for line in lines:
-        line = line.rstrip()  # 📌 Xoá ký tự xuống dòng
-                              # 🎯 Mục đích: Tránh bị xuống dòng thừa khi ghi lại file
+    # WandB configuration
+    WANDB_API_KEY = "449ae55008e2e327116d3d500dfda77cdf77ce70"
+    WANDB_PROJECT = "AMR_ViT5_T4GPU"
 
-        if line.startswith("#::snt"):  # 📌 Dòng bắt đầu là câu tiếng Việt
-            if current_block:
-                blocks.append(current_block)
-                # 🎯 Mục đích: Nếu đang xử lý một block cũ, thì thêm vào danh sách chính
-                # ✅ Kết quả: Mỗi block được phân biệt rõ ràng
-
-                current_block = []  # 📌 Reset block để bắt đầu đoạn mới
-
-        current_block.append(line)  # 📌 Thêm dòng hiện tại vào block hiện tại
-
-    # ------------------------------------------
-    # Bước 5: Thêm đoạn cuối nếu chưa được ghi
-    # ------------------------------------------
-    if current_block:
-        blocks.append(current_block)
-    # 🎯 Mục đích: Đảm bảo đoạn cuối cùng không bị bỏ sót
-    # ✅ Kết quả: Danh sách `blocks` đầy đủ tất cả đoạn câu + AMR
-
-    # ------------------------------------------
-    # Bước 6: Ghi các block vào file mới
-    # ------------------------------------------
-    with open(output_file_path, 'w', encoding='utf-8') as f:
-        for block in blocks:
-            for line in block:
-                f.write(line + '\n')
-            f.write('-----------------------------------------------\n')
-    # 📌 Nội dung: Ghi từng dòng trong block và phân cách các block bằng dòng gạch ngang
-    # 🎯 Mục đích: Dễ dàng phân tích từng đoạn trong các bước tiếp theo
-    # ✅ Kết quả: File `input_amr.txt` đã sẵn sàng để dùng tiếp trong pipeline
-
-    # ------------------------------------------
-    # Bước 7: In ra đường dẫn file kết quả
-    # ------------------------------------------
-    print(f"✅ File AMR đã được chuẩn hóa và lưu tại: {output_file_path}")
-    # 🎯 Mục đích: Cho người dùng xác nhận quá trình xử lý đã xong
-    # ✅ Kết quả: Biết chính xác nơi lưu file để tiếp tục Module 2
+    # Evaluation settings
+    EVAL_SAMPLES = 100
 
 
-# =========================
-# ▶️ GỌI HÀM TIỀN XỬ LÝ
-# =========================
-clean_amr_file("/content/drive/MyDrive/Colab Notebooks/Semantic Parsing/train_amr.txt")
-# 📌 Nội dung: Chạy hàm với đường dẫn cụ thể tới file AMR gốc
-# 🎯 Mục đích: Chuẩn hóa nội dung để phục vụ Module 2
-# ✅ Kết quả: Tạo được file `input_amr.txt` ở thư mục gốc, cấu trúc rõ ràng
+# ======================
+# LOGGING SETUP
+# ======================
+def setup_logging() -> logging.Logger:
+    """Setup logging configuration"""
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(levelname)s - %(message)s",
+        handlers=[
+            logging.StreamHandler(),
+            logging.FileHandler(f"{Config.LOG_DIR}/amr_pipeline.log"),
+        ],
+    )
+    return logging.getLogger(__name__)
 
 
-# =======================================
-# 📦 MODULE 2: CHUYỂN AMR THÀNH JSON
-# =======================================
+logger = setup_logging()
 
-import json  # ✪ Nội dung: Dùng để đọc/ghi file JSON
-              # 🌟 Mục đích: Biến danh sách cặp (input/output) thành file training
-              # ✅ Kết quả: Cho ra file .json chuẩn huấn luyện
 
-import os    # ✪ Nội dung: Dùng để xử lý đường dẫn file
-              # 🌟 Mục đích: Gừi gọn việc chỉnh sửa path file
-              # ✅ Kết quả: Biến file đồng bộ với Module 1
+# ======================
+# UTILITY FUNCTIONS
+# ======================
+def ensure_dir_exists(file_path: str) -> None:
+    """Ensure directory exists for given file path"""
+    Path(file_path).parent.mkdir(parents=True, exist_ok=True)
 
-# =======================================
-# ✅ KHAI BÁO ĐƯỚNG DẪN INPUT/OUTPUT
-# =======================================
-input_file = "/content/drive/MyDrive/Colab Notebooks/Semantic Parsing/input_amr.txt"  # ✪ File AMR sau khi clean
-output_file = "/content/drive/MyDrive/Colab Notebooks/Semantic Parsing/amr_data.json" # ✪ File json huấn luyện
 
-# =======================================
-# ✅ BƯỚC 1: ĐỌC FILE VÀ LƯU Dữ LIỆU TỪNG DÒNG
-# =======================================
-with open(input_file, 'r', encoding='utf-8') as f:
-    lines = f.readlines()  # ✪ Đọc toàn bộ dữ liệu dòng
-                        # 🌟 Cho phép duyệt theo block
-                        # ✅ Tạo danh sách lines để xử lý dần
+def get_file_paths() -> Dict[str, str]:
+    """Get all file paths used in the pipeline"""
+    return {
+        "raw_amr": f"{Config.DATA_DIR}/{Config.RAW_AMR_FILE}",
+        "cleaned_amr": f"{Config.DATA_DIR}/{Config.CLEANED_AMR_FILE}",
+        "json_data": f"{Config.DATA_DIR}/{Config.JSON_DATA_FILE}",
+        "tokenized_data": f"{Config.DATA_DIR}/{Config.TOKENIZED_DATA_FILE}",
+        "model_output": Config.OUTPUT_MODEL_DIR,
+    }
 
-# =======================================
-# ✅ BƯỚC 2: TÁCH CẶP INPUT/OUTPUT
-# =======================================
-data = []                 # ✪ Danh sách dữ liệu output dạng JSON
-current_sentence = None   # ✪ Lưu câu đang xử lý
-amr_lines = []            # ✪ Gom các dòng AMR tương ứng
 
-for line in lines:
-    line = line.strip()  # ✪ Xóa khoảng trắng dư
+# ======================
+# MODULE 1: DATA CLEANING
+# ======================
+class AMRDataCleaner:
+    """Handles AMR data cleaning and preprocessing"""
 
-    if line.startswith("#::snt"):  # ✪ Gặp câu mới
-        if current_sentence and amr_lines:
-            data.append({  # ✪ Lưu block trước
-                "input": current_sentence,
-                "output": "\n".join(amr_lines)
-            })
-        current_sentence = line[7:].strip()  # ✪ Tách câu
+    def __init__(self, input_path: str, output_path: str):
+        self.input_path = input_path
+        self.output_path = output_path
+        ensure_dir_exists(output_path)
+
+    def clean_amr_file(self) -> bool:
+        """
+        Clean and normalize AMR file for further processing
+
+        Returns:
+            bool: True if successful, False otherwise
+        """
+        try:
+            logger.info(f"🧼 Starting AMR file cleaning: {self.input_path}")
+
+            # Read all lines
+            with open(self.input_path, "r", encoding="utf-8") as f:
+                lines = f.readlines()
+
+            # Group lines into blocks
+            blocks = self._group_into_blocks(lines)
+
+            # Write cleaned blocks
+            self._write_blocks(blocks)
+
+            logger.info(f"✅ AMR file cleaned successfully: {self.output_path}")
+            return True
+
+        except Exception as e:
+            logger.error(f"❌ Error cleaning AMR file: {e}")
+            return False
+
+    def _group_into_blocks(self, lines: List[str]) -> List[List[str]]:
+        """Group lines into AMR blocks"""
+        blocks = []
+        current_block = []
+
+        for line in lines:
+            line = line.rstrip()
+
+            if line.startswith("#::snt"):
+                if current_block:
+                    blocks.append(current_block)
+                    current_block = []
+
+            current_block.append(line)
+
+        # Add final block
+        if current_block:
+            blocks.append(current_block)
+
+        return blocks
+
+    def _write_blocks(self, blocks: List[List[str]]) -> None:
+        """Write blocks to output file"""
+        with open(self.output_path, "w", encoding="utf-8") as f:
+            for block in blocks:
+                for line in block:
+                    f.write(line + "\n")
+                f.write("-----------------------------------------------\n")
+
+
+# ======================
+# MODULE 2: JSON CONVERSION
+# ======================
+class AMRToJSONConverter:
+    """Converts AMR data to JSON format for training"""
+
+    def __init__(self, input_path: str, output_path: str):
+        self.input_path = input_path
+        self.output_path = output_path
+        ensure_dir_exists(output_path)
+
+    def convert_to_json(self) -> bool:
+        """
+        Convert AMR file to JSON format
+
+        Returns:
+            bool: True if successful, False otherwise
+        """
+        try:
+            logger.info(f"🔄 Converting AMR to JSON: {self.input_path}")
+
+            # Read and parse data
+            data = self._parse_amr_data()
+
+            # Remove duplicates
+            filtered_data = self._remove_duplicates(data)
+
+            # Save to JSON
+            self._save_json(filtered_data)
+
+            logger.info(
+                f"✅ Saved {len(filtered_data)} input/output pairs to: {self.output_path}"
+            )
+            return True
+
+        except Exception as e:
+            logger.error(f"❌ Error converting to JSON: {e}")
+            return False
+
+    def _parse_amr_data(self) -> List[Dict[str, str]]:
+        """Parse AMR data from file"""
+        with open(self.input_path, "r", encoding="utf-8") as f:
+            lines = f.readlines()
+
+        data = []
+        current_sentence = None
         amr_lines = []
 
-    elif line == "-----------------------------------------------":
+        for line in lines:
+            line = line.strip()
+
+            if line.startswith("#::snt"):
+                if current_sentence and amr_lines:
+                    data.append(
+                        {"input": current_sentence, "output": "\n".join(amr_lines)}
+                    )
+                current_sentence = line[7:].strip()
+                amr_lines = []
+
+            elif line == "-----------------------------------------------":
+                if current_sentence and amr_lines:
+                    data.append(
+                        {"input": current_sentence, "output": "\n".join(amr_lines)}
+                    )
+                    current_sentence = None
+                    amr_lines = []
+
+            elif current_sentence is not None and line:
+                amr_lines.append(line)
+
+        # Handle final block
         if current_sentence and amr_lines:
-            data.append({  # ✪ Lưu block cuối của câu
-                "input": current_sentence,
-                "output": "\n".join(amr_lines)
-            })
-            current_sentence = None
-            amr_lines = []
+            data.append({"input": current_sentence, "output": "\n".join(amr_lines)})
 
-    elif current_sentence is not None:
-        amr_lines.append(line)  # ✪ Gom dòng AMR
+        return data
 
-# ✪ Nếu câu cuối chưa được lưu
-if current_sentence and amr_lines:
-    data.append({
-        "input": current_sentence,
-        "output": "\n".join(amr_lines)
-    })
+    def _remove_duplicates(self, data: List[Dict[str, str]]) -> List[Dict[str, str]]:
+        """Remove duplicate entries"""
+        seen = set()
+        filtered_data = []
 
-# =======================================
-# ✅ BƯỚC 3: LOẠI BỆ TRÙNG LẤP
-# =======================================
-seen = set()             # ✪ Set để kiểm tra các cặp trùng
-filtered_data = []       # ✪ Danh sách đã loại trùng
-for entry in data:
-    key = (entry["input"], entry["output"])
-    if key not in seen:
-        filtered_data.append(entry)
-        seen.add(key)  # ✪ Đánh dấu đã gặp
+        for entry in data:
+            key = (entry["input"], entry["output"])
+            if key not in seen:
+                filtered_data.append(entry)
+                seen.add(key)
 
-# =======================================
-# ✅ BƯỚC 4: GHI RA FILE JSON
-# =======================================
-with open(output_file, 'w', encoding='utf-8') as f:
-    json.dump(filtered_data, f, ensure_ascii=False, indent=2)  # ✪ Ghi chuẩn UTF-8, dễ đọc
+        return filtered_data
 
-# =======================================
-# ✅ BƯỚC 5: THÔNG BÁO HOÀN THÀNH
-# =======================================
-print(f"✅ Đã lưu {len(filtered_data)} cặp input/output vào: {output_file}")
+    def _save_json(self, data: List[Dict[str, str]]) -> None:
+        """Save data to JSON file"""
+        with open(self.output_path, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
 
 
-# ==============================================================================
-# 📦 MODULE 3: TOKENIZE DỮ LIỆU TỪ FILE JSON ĐỂ CHUẨN BỊ CHO MÔ HÌNH HUẤN LUYỆN
-# ==============================================================================
+# ======================
+# MODULE 3: TOKENIZATION
+# ======================
+class AMRTokenizer:
+    """Handles tokenization of AMR data"""
 
-# =========================
-# 📦 IMPORT CÁC THƯ VIỆN
-# =========================
-from transformers import T5Tokenizer        # Dùng tokenizer của mô hình T5 hoặc LongT5
-import json                                # Đọc/ghi file JSON
-import os                                  # Xử lý đường dẫn file
+    def __init__(
+        self, json_path: str, output_path: str, model_name: str = Config.MODEL_NAME
+    ):
+        self.json_path = json_path
+        self.output_path = output_path
+        self.model_name = model_name
+        ensure_dir_exists(output_path)
 
-# =========================
-# 🛠 CẤU HÌNH ĐƯỜNG DẪN
-# =========================
-input_json_path = "/content/drive/MyDrive/Colab Notebooks/Semantic Parsing/amr_data.json"
-token_output_path = os.path.join(os.path.dirname(input_json_path), "Tokenize_data.txt")
+    def tokenize_data(self) -> bool:
+        """
+        Tokenize AMR data for model training
 
-# =========================
-# ✂️ TẢI TOKENIZER
-# =========================
-tokenizer = T5Tokenizer.from_pretrained("google/long-t5-tglobal-base")  # Dùng tokenizer tương thích với LongT5
+        Returns:
+            bool: True if successful, False otherwise
+        """
+        try:
+            logger.info(f"✂️ Starting tokenization: {self.json_path}")
 
-# =========================
-# 🔄 TOKENIZE TOÀN BỘ DỮ LIỆU
-# =========================
-with open(input_json_path, 'r', encoding='utf-8') as f:
-    data = json.load(f)  # Đọc toàn bộ dữ liệu {"input": ..., "output": ...}
+            # Load tokenizer
+            tokenizer = AutoTokenizer.from_pretrained(self.model_name)
 
-with open(token_output_path, 'w', encoding='utf-8') as f_out:
-    for item in data:
-        input_text = item["input"]
-        output_text = item["output"]
+            # Load data
+            with open(self.json_path, "r", encoding="utf-8") as f:
+                data = json.load(f)
 
-        # Tokenize input
-        input_tokens = tokenizer.tokenize(input_text)
-        # Tokenize output
-        output_tokens = tokenizer.tokenize(output_text)
+            # Tokenize and save
+            self._tokenize_and_save(data, tokenizer)
 
-        # Ghi thông tin ra file
-        f_out.write("#::input_tokens\n")
-        f_out.write(" ".join(input_tokens) + "\n\n")
+            logger.info(f"✅ Tokenization completed: {self.output_path}")
+            return True
 
-        f_out.write("#::output_tokens\n")
-        f_out.write(" ".join(output_tokens) + "\n")
+        except Exception as e:
+            logger.error(f"❌ Error during tokenization: {e}")
+            return False
 
-        # Phân cách giữa các câu
-        f_out.write("-" * 40 + "\n")
-		
-		
-# =========================================================================================
-# 📦 MODULE 4: HUẤN LUYỆN MÔ HÌNH vit5-base ĐỂ CHUYỂN ĐỔI TỪ CÂU TIẾNG VIỆT SANG SƠ ĐỒ AMR
-# =========================================================================================
+    def _tokenize_and_save(self, data: List[Dict[str, str]], tokenizer) -> None:
+        """Tokenize data and save to file"""
+        with open(self.output_path, "w", encoding="utf-8") as f:
+            for item in data:
+                input_tokens = tokenizer.tokenize(item["input"])
+                output_tokens = tokenizer.tokenize(item["output"])
 
-# =========================
-# 📦 IMPORT CÁC THƯ VIỆN
-# =========================
-from transformers import T5ForConditionalGeneration                 # 📌 Mô hình seq2seq T5
-from transformers import Seq2SeqTrainer, Seq2SeqTrainingArguments   # 📌 Trainer cho mô hình Seq2Seq
-from datasets import Dataset                                        # 📌 Dùng để tạo dataset từ JSON list
-from transformers import AutoTokenizer                              # 📌 Tokenizer phù hợp với mô hình
-import json                                                         # 📌 Dùng đọc file dữ liệu
-import os                                                           # 📌 Quản lý file path
-import wandb                                                        # 📌 Theo dõi training trên wandb
+                f.write("#::input_tokens\n")
+                f.write(" ".join(input_tokens) + "\n\n")
+                f.write("#::output_tokens\n")
+                f.write(" ".join(output_tokens) + "\n")
+                f.write("-" * 40 + "\n")
 
-# =========================
-# 🛠 CẤU HÌNH ĐƯỜNG DẪN
-# =========================
-input_json_path = "/content/drive/MyDrive/Colab Notebooks/Sematic Parsing/amr_data.json"
-model_output_dir = "/content/drive/MyDrive/Colab Notebooks/Sematic Parsing/amr_model_vit5"
-log_dir = "/content/drive/MyDrive/Colab Notebooks/Sematic Parsing/logs_vit5"
 
-# =========================
-# 🧾 KẾT NỐI WANDB
-# =========================
-wandb.login()  
-# 📌 Nội dung: Đăng nhập tài khoản wandb đã cấu hình từ trước
-# 🎯 Mục đích: Bắt đầu theo dõi tiến trình training
-# ✅ Kết quả: Log mô hình, biểu đồ loss hiển thị trên trang wandb.io
+# ======================
+# MODULE 4: MODEL TRAINING
+# ======================
+class AMRTrainer:
+    """Handles model training with WandB integration"""
 
-# =========================
-# ✂️ LOAD TOKENIZER VIT5
-# =========================
-tokenizer = AutoTokenizer.from_pretrained("VietAI/vit5-base")  
-# 📌 Nội dung: Dùng tokenizer tương ứng với mô hình vit5
-# 🎯 Mục đích: Token hóa input/output đúng định dạng mô hình huấn luyện
-# ✅ Kết quả: Có thể sử dụng .encode/.decode cho văn bản tiếng Việt
+    def __init__(self, json_path: str, model_name: str = Config.MODEL_NAME):
+        self.json_path = json_path
+        self.model_name = model_name
+        self.model = None
+        self.tokenizer = None
 
-# =========================
-# 🚀 HÀM HUẤN LUYỆN
-# =========================
-def train_model(json_path):
-    # Bước 1: Đọc file JSON chứa các cặp (input/output)
-    with open(json_path, 'r', encoding='utf-8') as f:
-        data = json.load(f)
-    # 📌 Nội dung: Load toàn bộ dữ liệu huấn luyện
-    # 🎯 Mục đích: Chuẩn bị dữ liệu trước khi đưa vào dataset
-    # ✅ Kết quả: Danh sách dict với các cặp input/output
+        # Setup WandB
+        self._setup_wandb()
 
-    # Bước 2: Tạo Dataset từ danh sách dict
-    dataset = Dataset.from_list(data)
-    # 📌 Nội dung: Biến list → dataset để Trainer sử dụng
-    # 🎯 Mục đích: Chuẩn hóa format theo HuggingFace
-    # ✅ Kết quả: Biến `dataset` có thể dùng trực tiếp
+    def _setup_wandb(self) -> None:
+        """Setup WandB for experiment tracking"""
+        try:
+            wandb.login(key=Config.WANDB_API_KEY)
+            logger.info("📊 WandB connected successfully")
+        except Exception as e:
+            logger.warning(f"⚠️ WandB connection failed: {e}")
 
-    # Bước 3: Tokenize toàn bộ dữ liệu
-    def preprocess(example):
-        model_input = tokenizer(
+    def train_model(self) -> Optional[T5ForConditionalGeneration]:
+        """
+        Train the AMR model
+
+        Returns:
+            Trained model or None if failed
+        """
+        try:
+            logger.info(f"🚀 Starting model training: {self.model_name}")
+
+            # Load and prepare data
+            dataset = self._prepare_dataset()
+
+            # Load model and tokenizer
+            self._load_model_and_tokenizer()
+
+            # Setup training arguments
+            training_args = self._get_training_args()
+
+            # Create trainer
+            trainer = Seq2SeqTrainer(
+                model=self.model,
+                args=training_args,
+                train_dataset=dataset,
+            )
+
+            # Start training
+            trainer.train()
+
+            logger.info("✅ Model training completed successfully")
+            return self.model
+
+        except Exception as e:
+            logger.error(f"❌ Error during training: {e}")
+            return None
+
+    def _prepare_dataset(self) -> Dataset:
+        """Prepare dataset for training"""
+        with open(self.json_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        dataset = Dataset.from_list(data)
+        return dataset.map(self._preprocess_function)
+
+    def _load_model_and_tokenizer(self) -> None:
+        """Load model and tokenizer"""
+        self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
+        self.model = T5ForConditionalGeneration.from_pretrained(self.model_name)
+
+    def _preprocess_function(self, example: Dict[str, str]) -> Dict[str, any]:
+        """Preprocess function for tokenization"""
+        model_input = self.tokenizer(
             example["input"],
             padding="max_length",
             truncation=True,
-            max_length=512
+            max_length=Config.MAX_LENGTH,
         )
-        labels = tokenizer(
+        labels = self.tokenizer(
             example["output"],
             padding="max_length",
             truncation=True,
-            max_length=512
+            max_length=Config.MAX_LENGTH,
         )
         model_input["labels"] = labels["input_ids"]
         return model_input
 
-    tokenized_dataset = dataset.map(preprocess)
-    # 📌 Nội dung: Tokenize toàn bộ câu input/output
-    # 🎯 Mục đích: Chuyển văn bản thành ID để mô hình huấn luyện
-    # ✅ Kết quả: Dataset đã token hóa đầy đủ
+    def _get_training_args(self) -> Seq2SeqTrainingArguments:
+        """Get training arguments configuration"""
+        ensure_dir_exists(Config.OUTPUT_MODEL_DIR)
+        ensure_dir_exists(Config.LOG_DIR)
 
-    # Bước 4: Load mô hình vit5-base
-    model = T5ForConditionalGeneration.from_pretrained("VietAI/vit5-base")
-    # 📌 Nội dung: Sử dụng mô hình tiếng Việt đã pretrain
-    # 🎯 Mục đích: Dựa trên kiến thức cũ để fine-tune nhanh hơn
-    # ✅ Kết quả: Mô hình đã sẵn sàng huấn luyện
-
-    # Bước 5: Cấu hình huấn luyện
-    training_args = Seq2SeqTrainingArguments(
-        output_dir=model_output_dir,              
-        per_device_train_batch_size=4,             # T4 nên dùng batch 4
-        num_train_epochs=10,                       # Có thể điều chỉnh nếu loss ổn định
-        logging_dir=log_dir,                       
-        logging_steps=500,                         # Ghi log mỗi 500 steps
-        save_steps=200,                            # Lưu model định kỳ
-        save_total_limit=2,                        # Chỉ lưu tối đa 2 model
-        report_to=["wandb"],                       # Kết nối wandb
-        run_name="AMR_ViT5_T4GPU",                 # Tên run trong wandb
-        fp16=True                                  # Tăng tốc nếu GPU hỗ trợ
-    )
-
-    # Bước 6: Tạo Trainer và train
-    trainer = Seq2SeqTrainer(
-        model=model,
-        args=training_args,
-        train_dataset=tokenized_dataset,
-        tokenizer=tokenizer
-    )
-
-    # Bước 7: Tiến hành huấn luyện
-    trainer.train()
-    # 📌 Nội dung: Gọi trainer để bắt đầu huấn luyện
-    # 🎯 Mục đích: Fine-tune mô hình vit5 trên dữ liệu AMR tiếng Việt
-    # ✅ Kết quả: Model được cải thiện theo dữ liệu AMR
-
-    return model
-
-# =========================
-# ▶️ GỌI HÀM HUẤN LUYỆN
-# =========================
-model = train_model(input_json_path)
-# 📌 Nội dung: Gọi huấn luyện từ file json
-# 🎯 Mục đích: Kích hoạt toàn bộ pipeline training
-# ✅ Kết quả: Mô hình vit5 được huấn luyện và lưu
+        return Seq2SeqTrainingArguments(
+            output_dir=Config.OUTPUT_MODEL_DIR,
+            per_device_train_batch_size=Config.BATCH_SIZE,
+            num_train_epochs=Config.NUM_EPOCHS,
+            logging_dir=Config.LOG_DIR,
+            logging_steps=Config.LOGGING_STEPS,
+            save_steps=Config.SAVE_STEPS,
+            save_total_limit=Config.SAVE_TOTAL_LIMIT,
+            report_to=["wandb"],
+            run_name=Config.WANDB_PROJECT,
+            fp16=True,
+            push_to_hub=False,
+        )
 
 
-# ====================================================================
-# MODULE 5A: ĐÁNH GIÁ CHẤT LƯỢNG MÔ HÌNH T5 BẰNG CÁCH TÍNH BLEU SCORE
-# ====================================================================
+# ======================
+# MODULE 5: MODEL EVALUATION
+# ======================
+class AMREvaluator:
+    """Handles model evaluation using BLEU score"""
 
-# =========================
-# 📦 IMPORT CẦN THIẾT
-# =========================
-from nltk.translate.bleu_score import sentence_bleu   # Nội dung: Hàm tính điểm BLEU từ NLTK
-                                                      # Mục đích: So sánh độ giống nhau giữa AMR thật và dự đoán
-                                                      # Kết quả: Trả về số từ 0.0 đến 1.0
+    def __init__(self, model, tokenizer, json_path: str):
+        self.model = model
+        self.tokenizer = tokenizer
+        self.json_path = json_path
 
-import json  # Nội dung: Dùng để đọc dữ liệu từ file JSON
-             # Mục đích: Lấy cặp input/output đã lưu
-             # Kết quả: Biến `samples` là list chứa nhiều dict
+    def evaluate_model(self) -> float:
+        """
+        Evaluate model using BLEU score
 
-import torch  # Nội dung: Thư viện tính toán tensor
-              # Mục đích: Kiểm tra và chuyển device giữa CPU và GPU
-              # Kết quả: Đảm bảo model và dữ liệu nằm trên cùng thiết bị
+        Returns:
+            Average BLEU score
+        """
+        try:
+            logger.info("🧪 Starting model evaluation")
 
-# =========================
-# 📍 ĐƯỜNG DẪN FILE
-# =========================
-json_path = "/content/drive/MyDrive/Colab Notebooks/Semantic Parsing/amr_data.json"  # Đường dẫn file JSON đầu vào
+            with open(self.json_path, "r", encoding="utf-8") as f:
+                samples = json.load(f)
 
-# =========================
-# 🧪 HÀM ĐÁNH GIÁ MÔ HÌNH
-# =========================
-def evaluate_model(model, tokenizer, json_path):
-    # Bước 1: Đọc file chứa cặp input/output từ json
-    with open(json_path, 'r', encoding='utf-8') as f:
-        samples = json.load(f)
+            total_score = 0
+            device = next(self.model.parameters()).device
 
-    total_score = 0  # Bước 2: Khởi tạo biến tổng điểm BLEU
+            # Evaluate on first N samples
+            eval_samples = min(len(samples), Config.EVAL_SAMPLES)
 
-    # Bước 3: Xác định device mô hình đang chạy (GPU nếu có, không thì CPU)
-    device = next(model.parameters()).device
+            for i, sample in enumerate(samples[:eval_samples]):
+                if i % 20 == 0:
+                    logger.info(f"Evaluating sample {i + 1}/{eval_samples}")
 
-    # Bước 4: Lặp 100 mẫu đầu để đánh giá nhanh
-    for sample in samples[:100]:
-        # Bước 4.1: Token hóa câu đầu vào và chuyển sang đúng device
-        input_ids = tokenizer(sample["input"], return_tensors="pt").input_ids.to(device)
+                score = self._calculate_bleu_score(sample, device)
+                total_score += score
 
-        # Bước 4.2: Mô hình sinh sơ đồ AMR dự đoán
-        output_ids = model.generate(input_ids)[0]
+            avg_bleu = round(total_score / eval_samples, 4)
+            logger.info(f"📊 Average BLEU score: {avg_bleu}")
+            return avg_bleu
 
-        # Bước 4.3: Giải mã chuỗi dự đoán thành văn bản
-        prediction = tokenizer.decode(output_ids, skip_special_tokens=True)
+        except Exception as e:
+            logger.error(f"❌ Error during evaluation: {e}")
+            return 0.0
 
-        # Bước 4.4: Tách chuỗi thành danh sách từ (token) để tính BLEU
-        reference = sample["output"].split()      # AMR thật
-        hypothesis = prediction.split()           # AMR dự đoán
+    def _calculate_bleu_score(self, sample: Dict[str, str], device) -> float:
+        """Calculate BLEU score for a single sample"""
+        try:
+            input_ids = self.tokenizer(
+                sample["input"], return_tensors="pt"
+            ).input_ids.to(device)
+            output_ids = self.model.generate(input_ids, max_length=Config.MAX_LENGTH)[0]
+            prediction = self.tokenizer.decode(output_ids, skip_special_tokens=True)
 
-        # Bước 4.5: Cộng điểm BLEU vào tổng
-        total_score += sentence_bleu([reference], hypothesis)
+            reference = sample["output"].split()
+            hypothesis = prediction.split()
 
-    # Bước 5: Tính điểm BLEU trung bình
-    avg_bleu = round(total_score / 100, 4)
-
-    # Bước 6: In kết quả cuối cùng
-    print("BLEU score:", avg_bleu)
-
-# =========================
-# ▶️ GỌI HÀM ĐÁNH GIÁ
-# =========================
-evaluate_model(model, tokenizer, json_path)
+            return sentence_bleu([reference], hypothesis)
+        except Exception:
+            return 0.0
 
 
-# ===========================================================================
-# MODULE 6: LƯU MÔ HÌNH VÀ TOKENIZER ĐÃ HUẤN LUYỆN VÀO THƯ MỤC ĐỂ SỬ DỤNG LẠI
-# ===========================================================================
+# ======================
+# MODULE 6: MODEL PERSISTENCE
+# ======================
+class ModelManager:
+    """Handles model saving and loading"""
 
-# Nội dung: Gọi phương thức save_pretrained() của mô hình T5
-# Mục đích: Lưu toàn bộ trọng số, kiến trúc và config của mô hình
-# Kết quả: Tạo thư mục /content/amr_model chứa các file như config.json, pytorch_model.bin, ...
-model.save_pretrained("/content/drive/MyDrive/Colab Notebooks/Semantic Parsing/amr_model")
+    @staticmethod
+    def save_model(model, tokenizer, save_path: str = Config.OUTPUT_MODEL_DIR) -> bool:
+        """
+        Save model and tokenizer
 
-# Nội dung: Lưu tokenizer kèm theo mô hình
-# Mục đích: Đảm bảo khi load lại mô hình vẫn dùng đúng kiểu token hóa
-# Kết quả: Thư mục /content/amr_model có thêm tokenizer_config.json, vocab.json, tokenizer.model, ...
-tokenizer.save_pretrained("/content/drive/MyDrive/Colab Notebooks/Semantic Parsing/amr_model")
+        Args:
+            model: Trained model
+            tokenizer: Model tokenizer
+            save_path: Path to save the model
+
+        Returns:
+            bool: True if successful, False otherwise
+        """
+        try:
+            logger.info(f"💾 Saving model to: {save_path}")
+            ensure_dir_exists(save_path)
+
+            model.save_pretrained(save_path)
+            tokenizer.save_pretrained(save_path)
+
+            logger.info("✅ Model saved successfully")
+            return True
+
+        except Exception as e:
+            logger.error(f"❌ Error saving model: {e}")
+            return False
+
+    @staticmethod
+    def load_model(
+        model_path: str = Config.OUTPUT_MODEL_DIR,
+    ) -> Tuple[Optional[any], Optional[any]]:
+        """
+        Load saved model and tokenizer
+
+        Args:
+            model_path: Path to load the model from
+
+        Returns:
+            Tuple of (model, tokenizer) or (None, None) if failed
+        """
+        try:
+            logger.info(f"📥 Loading model from: {model_path}")
+
+            model = T5ForConditionalGeneration.from_pretrained(model_path)
+            tokenizer = AutoTokenizer.from_pretrained(model_path)
+
+            logger.info("✅ Model loaded successfully")
+            return model, tokenizer
+
+        except Exception as e:
+            logger.error(f"❌ Error loading model: {e}")
+            return None, None
 
 
-# ========================================================================================
-# MODULE 7: CHO NGƯỜI DÙNG NHẬP MỘT CÂU TIẾNG VIỆT, MÔ HÌNH SẼ DỰ ĐOÁN SƠ ĐỒ AMR TƯƠNG ỨNG
-# ========================================================================================
+# ======================
+# MODULE 7: PREDICTION
+# ======================
+class AMRPredictor:
+    """Handles AMR prediction from Vietnamese sentences"""
 
-from transformers import T5ForConditionalGeneration, T5Tokenizer  # Nội dung: Import mô hình và tokenizer T5
-                                                                  # Mục đích: Dùng để load lại mô hình đã huấn luyện và xử lý câu nhập
-                                                                  # Kết quả: Có thể sử dụng model.generate để tạo AMR từ input
+    def __init__(self, model_path: str = Config.OUTPUT_MODEL_DIR):
+        self.model, self.tokenizer = ModelManager.load_model(model_path)
 
-def predict_amr_from_input():
-    # Nội dung: Load lại mô hình đã lưu trước đó
-    # Mục đích: Dùng mô hình đã huấn luyện thay vì tạo mới
-    # Kết quả: Biến `model` chứa mô hình đã sẵn sàng dự đoán
-    model = T5ForConditionalGeneration.from_pretrained("/content/drive/MyDrive/Colab Notebooks/Semantic Parsing/amr_model")
+        if self.model is None or self.tokenizer is None:
+            raise ValueError("Failed to load model and tokenizer")
 
-    # Nội dung: Load lại tokenizer tương ứng với mô hình
-    # Mục đích: Đảm bảo mô hình và tokenizer đồng bộ
-    # Kết quả: Biến `tokenizer` sẵn sàng mã hóa/giải mã văn bản
-    tokenizer = T5Tokenizer.from_pretrained("/content/drive/MyDrive/Colab Notebooks/Semantic Parsing/amr_model")
+    def predict_interactive(self) -> None:
+        """Interactive prediction mode"""
+        logger.info("🎯 Starting interactive prediction mode")
+        print("\n" + "=" * 50)
+        print("🎯 AMR PREDICTION MODE")
+        print("=" * 50)
+        print("Nhập 'quit' để thoát")
 
-    # Nội dung: Cho phép người dùng nhập một câu tiếng Việt từ bàn phím
-    # Mục đích: Làm input cho mô hình dự đoán
-    # Kết quả: Câu được lưu vào biến `input_sentence`, giữ nguyên dấu tiếng Việt
-    input_sentence = input("Nhập một câu tiếng Việt để chuyển thành sơ đồ AMR: ").strip()
+        while True:
+            try:
+                input_sentence = input("\nNhập câu tiếng Việt: ").strip()
 
-    # Nội dung: Tokenize câu nhập bằng tokenizer của mô hình
-    # Mục đích: Chuyển câu thành tensor để mô hình xử lý
-    # Kết quả: Tạo input_ids dùng cho mô hình
-    input_ids = tokenizer(input_sentence, return_tensors="pt").input_ids
+                if input_sentence.lower() in ["quit", "exit", "q"]:
+                    print("👋 Tạm biệt!")
+                    break
 
-    # Nội dung: Sinh đầu ra từ mô hình dựa trên câu đã token hóa
-    # Mục đích: Tạo sơ đồ AMR từ câu tiếng Việt
-    # Kết quả: Biến `output_ids` chứa tensor biểu diễn AMR
-    output_ids = model.generate(input_ids)[0]
+                if not input_sentence:
+                    print("⚠️ Vui lòng nhập một câu hợp lệ")
+                    continue
 
-    # Nội dung: Giải mã tensor đầu ra thành văn bản
-    # Mục đích: Chuyển từ token ID → chuỗi AMR
-    # Kết quả: Biến `prediction` là sơ đồ AMR dưới dạng chuỗi
-    prediction = tokenizer.decode(output_ids, skip_special_tokens=True)
+                amr_output = self.predict(input_sentence)
+                print(f"\n📝 Sơ đồ AMR dự đoán:\n{amr_output}")
+                print("-" * 50)
 
-    # Nội dung: In kết quả sơ đồ AMR ra màn hình
-    # Mục đích: Hiển thị cho người dùng xem trực tiếp
-    # Kết quả: Kết quả được hiển thị rõ ràng
-    print("\n📌 Sơ đồ AMR dự đoán:\n")
-    print(prediction)
+            except KeyboardInterrupt:
+                print("\n👋 Tạm biệt!")
+                break
+            except Exception as e:
+                logger.error(f"Error during prediction: {e}")
+                print("❌ Có lỗi xảy ra trong quá trình dự đoán")
 
-# Nội dung: Gọi hàm để bắt đầu dự đoán
-# Mục đích: Cho phép nhập câu và chạy mô hình
-# Kết quả: Mô hình in ra sơ đồ AMR tương ứng với câu nhập
-predict_amr_from_input()
+    def predict(self, input_sentence: str) -> str:
+        """
+        Predict AMR for a given Vietnamese sentence
+
+        Args:
+            input_sentence: Vietnamese sentence
+
+        Returns:
+            Predicted AMR string
+        """
+        try:
+            input_ids = self.tokenizer(input_sentence, return_tensors="pt").input_ids
+
+            with torch.no_grad():  # Save memory during inference
+                output_ids = self.model.generate(
+                    input_ids,
+                    max_length=Config.MAX_LENGTH,
+                    num_beams=4,  # Use beam search for better quality
+                    early_stopping=True,
+                )[0]
+
+            prediction = self.tokenizer.decode(output_ids, skip_special_tokens=True)
+            return prediction
+
+        except Exception as e:
+            logger.error(f"Error predicting AMR: {e}")
+            return "❌ Không thể dự đoán AMR cho câu này"
+
+
+# ======================
+# MAIN PIPELINE CLASS
+# ======================
+class AMRPipeline:
+    """Main pipeline orchestrator"""
+
+    def __init__(self):
+        self.paths = get_file_paths()
+        logger.info("🔧 AMR Pipeline initialized")
+
+    def run_full_pipeline(self) -> bool:
+        """
+        Run the complete AMR processing pipeline
+
+        Returns:
+            bool: True if successful, False otherwise
+        """
+        logger.info("🚀 Starting full AMR pipeline")
+
+        # Module 1: Clean data
+        if not self._run_data_cleaning():
+            return False
+
+        # Module 2: Convert to JSON
+        if not self._run_json_conversion():
+            return False
+
+        # Module 3: Tokenize data
+        if not self._run_tokenization():
+            return False
+
+        # Module 4: Train model
+        model = self._run_training()
+        if model is None:
+            return False
+
+        # Module 5: Evaluate model
+        self._run_evaluation(model)
+
+        # Module 6: Save model
+        if not self._run_model_saving(model):
+            return False
+
+        logger.info("🎉 Full pipeline completed successfully!")
+        return True
+
+    def _run_data_cleaning(self) -> bool:
+        """Run data cleaning module"""
+        cleaner = AMRDataCleaner(self.paths["raw_amr"], self.paths["cleaned_amr"])
+        return cleaner.clean_amr_file()
+
+    def _run_json_conversion(self) -> bool:
+        """Run JSON conversion module"""
+        converter = AMRToJSONConverter(
+            self.paths["cleaned_amr"], self.paths["json_data"]
+        )
+        return converter.convert_to_json()
+
+    def _run_tokenization(self) -> bool:
+        """Run tokenization module"""
+        tokenizer = AMRTokenizer(self.paths["json_data"], self.paths["tokenized_data"])
+        return tokenizer.tokenize_data()
+
+    def _run_training(self) -> Optional[any]:
+        """Run model training"""
+        trainer = AMRTrainer(self.paths["json_data"])
+        return trainer.train_model()
+
+    def _run_evaluation(self, model) -> None:
+        """Run model evaluation"""
+        trainer = AMRTrainer(self.paths["json_data"])
+        evaluator = AMREvaluator(model, trainer.tokenizer, self.paths["json_data"])
+        evaluator.evaluate_model()
+
+    def _run_model_saving(self, model) -> bool:
+        """Save the trained model"""
+        trainer = AMRTrainer(self.paths["json_data"])
+        return ModelManager.save_model(model, trainer.tokenizer)
+
+    def run_prediction_mode(self) -> None:
+        """Run interactive prediction mode"""
+        try:
+            predictor = AMRPredictor()
+            predictor.predict_interactive()
+        except Exception as e:
+            logger.error(f"❌ Error in prediction mode: {e}")
+            print(
+                "❌ Không thể khởi chạy chế độ dự đoán. Vui lòng kiểm tra model đã được train chưa."
+            )
+
+
+# ======================
+# MAIN EXECUTION
+# ======================
+def main():
+    """Main execution function"""
+    print("🎯 AMR SEMANTIC PARSING PIPELINE")
+    print("=" * 50)
+    print("1. Run full pipeline (clean → train → evaluate)")
+    print("2. Run prediction mode only")
+    print("3. Run individual modules")
+
+    choice = input("\nChọn chế độ (1/2/3): ").strip()
+
+    pipeline = AMRPipeline()
+
+    if choice == "1":
+        success = pipeline.run_full_pipeline()
+        if success:
+            print("\n🎉 Pipeline hoàn thành! Bạn có thể chạy chế độ dự đoán.")
+
+    elif choice == "2":
+        pipeline.run_prediction_mode()
+
+    elif choice == "3":
+        print("\n📋 Individual modules:")
+        print("1. Data cleaning")
+        print("2. JSON conversion")
+        print("3. Tokenization")
+        print("4. Model training")
+        print("5. Model evaluation")
+
+        module_choice = input("Chọn module (1-5): ").strip()
+
+        if module_choice == "1":
+            pipeline._run_data_cleaning()
+        elif module_choice == "2":
+            pipeline._run_json_conversion()
+        elif module_choice == "3":
+            pipeline._run_tokenization()
+        elif module_choice == "4":
+            model = pipeline._run_training()
+            if model:
+                pipeline._run_model_saving(model)
+        elif module_choice == "5":
+            # Load existing model for evaluation
+            model, tokenizer = ModelManager.load_model()
+            if model and tokenizer:
+                evaluator = AMREvaluator(model, tokenizer, pipeline.paths["json_data"])
+                evaluator.evaluate_model()
+    else:
+        print("❌ Lựa chọn không hợp lệ")
+
+
+# ======================
+# ENTRY POINT
+# ======================
+if __name__ == "__main__":
+    # Add missing import for torch
+    try:
+        import torch
+    except ImportError:
+        logger.error("❌ PyTorch not installed. Please install: pip install torch")
+        exit(1)
+
+    main()
