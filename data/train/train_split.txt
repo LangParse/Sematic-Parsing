@@ -1,0 +1,301 @@
+#::snt bi kịch là ở chỗ đó !
+(b / bi_kịch
+    :domain(c / chỗ
+        :mod(đ / đó)))
+
+#::snt cứ mỗi năm hành tinh này lại quay nhanh hơn , thế mà điều lệnh không thay đổi !
+(c / contrast-01
+    :ARG1(q / quay
+        :frequency(n / năm)
+        :theme(h / hành_tinh
+            :mod(n1 / này))
+        :manner(n2 / nhanh
+            :degree(h1 / hơn)))
+    :ARG2(t1 / thay_đổi
+        :theme(đ / điều_lệnh)
+        :polarity -))
+
+#::snt - thế thì sao ? ông hoàng nhỏ hỏi .
+(h / hỏi
+    :agent(ô / ông_hoàng
+        :mod(n / nhỏ))
+    :topic(a / amr-unknown
+        :domain(t / thế)
+        :mode interrogative))
+
+#::snt - vì hiện nay nó quay mỗi phút một vòng , ta không còn lấy một giây để nghỉ ngơi .
+(c / còn
+    :cause(q / quay
+        :theme(n / nó)
+        :time(n11 / now)
+        :frequency(r / rate-entity-91
+            :ARG2(v1 / vòng
+                :quant 1)
+            :ARG1(t1 / temporal-quantity
+                :unit(p / phút)
+                :quant 1)))
+    :pivot(t / ta)
+    :polarity -
+    :time(t2 / temporal-quantity
+        :unit(g / giây)
+        :purpose(n1 / nghỉ_ngơi)
+        :quant 1))
+
+#::snt mỗi phút ta phải thắp đèn và phải tắt đèn một lần !
+(o / obligate-01
+    :agent(t / ta)
+    :frequency(r / rate-entity-91
+        :ARG2(t1 / temporal-quantity
+            :unit(p / phút)
+            :quant 1))
+    :theme(a / and
+        :op1(t2 / thắp
+            :patient(đ / đèn)
+            :agent t)
+        :op2(t3 / tắt
+            :agent t
+            :patient đ)))
+
+#::snt - lạ thực đấy !
+(l / lạ
+    :degree(t / thực)
+    :mode expressive)
+
+#::snt ở đây ngày dài chỉ có một phút thôi !
+(d / dài
+    :location(đ / đây
+        :prep(ở / ở))
+    :duration(t2 / temporal-quantity
+        :unit(p / phút)
+        :quant 1
+            :degree(c / chỉ))
+    :domain(t / temporal-quantity
+        :unit(n / ngày)
+        :quant 1))
+
+#::snt - chẳng có gì lạ cả , người thắp đèn nói .
+(n1 / nói
+    :topic(l / lạ
+        :domain(c1 / có
+            :theme(g / gì)
+            :polarity -))
+    :agent(p / person
+        :agent-of(t / thắp
+            :patient(đ / đèn))))
+
+#::snt ta chuyện trò với nhau thế mà đã một tháng rồi đấy .
+(c / chuyện_trò
+    :agent(t / ta)
+    :goal(n / nhau)
+    :duration(t3 / temporal-quantity
+        :unit(t2 / tháng)
+        :quant 1))
+
+#::snt - một tháng kia ư ?
+(t / temporal-quantity
+    :unit(t1 / tháng)
+    :mode interrogative
+    :quant 1)
+
+#::snt - Phải , ba mươi phút .
+(t / temporal-quantity
+    :unit(p1 / phút)
+    :quant 30)
+
+#::snt Ba mươi ngày .
+(t / temporal-quantity
+    :unit(n / ngày)
+    :quant 30)
+
+#::snt chúc một đêm tốt lành .
+(c / chúc
+    :topic(đ / đêm
+        :mod(t / tốt_lành)
+        :quant 1))
+
+#::snt rồi ông lại thắp ngọn đèn .
+(a / and
+    :op2(t / thắp
+        :agent(ô / ông)
+        :patient(đ / đèn
+            :classifier(n / ngọn)
+            :poss ô)))
+
+#::snt ông hoàng nhỏ nhìn ông ta và thấy yêu mến người thắp đèn trung thành đến thế với điều lệnh .
+(a / and
+    :op1(n1 / nhìn
+        :agent(ô / ông_hoàng
+            :mod(n / nhỏ))
+        :goal(ô1 / ông
+            :mod(t / ta)))
+    :op2(t1 / thấy
+        :theme(y / yêu_mến
+            :theme(p / person
+                :agent-of(t2 / thắp
+                    :patient(đ / đèn))
+                :domain-of(t3 / trung_thành
+                    :topic(đ2 / điều_lệnh)))
+            :pivot ô)
+        :agent ô))
+
+#::snt cậu em nhớ tới những cảnh mặt trời lặn mà xưa kia chính em phải đi kiếm để xem , bằng cách dịch ghế ngồi .
+(n / nhớ
+    :pivot(e / em
+        :classifier(c / cậu))
+    :theme(c1 / cảnh
+        :theme-of(l / lặn
+            :theme(m / mặt_trời))
+        :agent-of(đ / đi
+            :time(x / xưa
+                :compound(k / kia))
+            :compound(k1 / kiếm)
+            :purpose(x1 / xem)
+            :manner(d / dịch
+                :patient(g / ghế
+                    :mod(n2 / ngồi)))
+            :agent e)))
+
+#::snt em muốn giúp ông bạn thân :
+(m / muốn
+    :pivot(e / em)
+    :theme(g / giúp
+        :agent e
+        :beneficiary-arg1(p / person
+            :agent-of(h / have-rel-role-91
+                :ARG2(b / bạn
+                    :classifier(ô / ông)
+                    :mod(t / thân))
+                :ARG1 e))))
+
+#::snt - này ông ...
+(n / này
+    :goal(ô / ông)
+    :mode expressive)
+
+#::snt tôi biết cách cho ông nghỉ ngơi khi nào ông muốn đấy ...
+(b / biết
+    :pivot(t / tôi)
+    :theme(c / cách
+        :purpose(n / nghỉ_ngơi
+            :agent(ô / ông)
+            :time(m / muốn
+                :pivot ô))))
+
+#::snt - ta luôn luôn muốn , người thắp đèn nói .
+(n1 / nói
+    :topic(m / muốn
+        :time(a / always)
+        :pivot p)
+    :agent(p / person
+        :agent-of(t1 / thắp
+            :patient(đ / đèn))))
+
+#::snt bởi vì người ta có thể , cùng một lúc , vừa trung thành lại vừa lười biếng .
+(c / cause-01
+    :ARG0(p / possible
+        :domain(n / người_ta)
+        :theme(a / and
+            :time(l / lúc
+                :mod(c1 / cùng))
+            :op1(t / trung_thành)
+            :op2(l2 / lười_biếng)
+            :domain n)))
+
+#::snt ông hoàng nhỏ hỏi tiếp :
+(h / hỏi
+    :agent(ô / ông_hoàng
+        :mod(n / nhỏ))
+    :compound(t / tiếp))
+
+#::snt - cái hành tinh của ông nhỏ đến nỗi ông có thể bước sải ba bước là đi giáp một vòng .
+(c1 / cause-01
+    :cause(n / nhỏ
+        :theme(h / hành_tinh
+            :classifier(c / cái)
+            :poss(ô / ông)))
+    :theme(wz1 / possible-01
+        :agent(b / bước
+            :compound(s / sải)
+            :unit(b2 / bước)
+            :quant 3
+            :agent ô)
+        :result(đ1 / đi
+            :compound(g / giáp)
+            :unit(v / vòng)
+            :quant 1)))
+
+#::snt ông chỉ có việc đi chầm chậm để lúc nào cũng ở dưới ánh mặt trời cả .
+(đ / đi
+    :agent(ô / ông)
+    :manner(c2 / chầm_chậm)
+    :purpose(b / be-located-at-91
+        :location(á / ánh
+            :prep(d / dưới)
+            :mod(m / mặt_trời))
+        :pivot ô
+        :time(a / always)))
+
+#::snt khi nào ông muốn nghỉ , ông cứ bước đi ...
+(b / bước
+    :time(m / muốn
+        :theme(n1 / nghỉ
+            :agent ô1)
+        :pivot ô1)
+    :agent(ô1 / ông)
+    :compound(đ / đi))
+
+#::snt thế là ông muốn ngày dài bao nhiêu thì nó dài bấy nhiêu .
+(m / muốn
+    :pivot(ô / ông)
+    :theme(d / dài
+        :domain(n / ngày)
+        :compared-to m
+            :pivot ô
+        :degree(wz3 / equal)
+        :duration(t1 / temporal-quantity
+            :quant(b / bao_nhiêu))))
+
+#::snt - cái ấy chẳng được việc gì cho ta , người thắp đèn nói .
+(n1 / nói
+    :topic(đ / được
+        :theme(c / cái
+            :mod(ấ / ấy))
+        :result(v / việc
+            :mod(g / gì))
+        :polarity -
+        :beneficiary p)
+    :agent(p / person
+        :agent-of(t1 / thắp
+            :patient(đ1 / đèn))))
+
+#::snt cái mà ta thích nhất trên đời , là ngủ .
+(t1 / thích
+    :pivot(t / ta)
+    :degree(n / nhất)
+    :setting(đ / đời)
+    :theme(n1 / ngủ
+        :pivot t))
+
+#::snt - thế thì thật là không may , ông hoàng nhỏ nói .
+(n1 / nói
+    :topic(m / may
+        :degree(t1 / thật)
+        :polarity -)
+    :agent(ô / ông_hoàng
+        :mod(n / nhỏ)))
+
+#::snt - thật là không may , người thắp đèn nói .
+(n1 / nói
+    :topic(m / may
+        :degree(t / thật)
+        :polarity -)
+    :agent(p / person
+        :agent-of(t1 / thắp
+            :patient(đ / đèn))))
+
+#::snt chúc một ngày tốt lành .
+(c / chúc
+    :topic(n / ngày
+        :mod(t / tốt_lành)
+        :quant 1))
+
