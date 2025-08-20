@@ -56,7 +56,7 @@ class AMRDemo:
         demo = gr.Interface(
             fn=self.predict,
             inputs=gr.Textbox(
-                lines=5,
+                lines=12,
                 placeholder="Nhập một câu tiếng Việt...",
                 label="Input Sentence",
             ),

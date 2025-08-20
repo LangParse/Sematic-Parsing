@@ -14,7 +14,7 @@ class RunMode(Enum):
 
 
 def main():
-    RUN_MODE = RunMode.EVALUATE  # Chọn chế độ: TRAIN, EVALUATE, PREDICT
+    RUN_MODE = RunMode.TRAIN  # Chọn chế độ: TRAIN, EVALUATE, PREDICT
 
     processor = AMRProcessor()
     dataset = processor.process_to_dataset(

@@ -204,18 +204,13 @@ class AMRTrainer:
             eval_strategy="epoch",
             save_strategy="epoch",
             load_best_model_at_end=True,
-            metric_for_best_model="smatch_f1",  # Dùng Smatch làm best metric
+            # metric_for_best_model="smatch_f1",  # Dùng Smatch làm best metric
             greater_is_better=True,
             predict_with_generate=True,
             eval_accumulation_steps=1,
             learning_rate=learning_rate,  # Set explicit
-            lr_scheduler_type="linear",  # Thêm scheduler
-            warmup_steps=100,  # Warmup
             generation_num_beams=6,  # Thêm để generate AMR tốt hơn, giảm ill-formatted
             generation_max_length=self.amr_tokenizer.max_length_output,
-            # Add these parameters to help with stability
-            dataloader_pin_memory=False,  # Reduce memory issues
-            eval_delay=500,  # Delay first evaluation
         )
 
         trainer = Seq2SeqTrainer(
@@ -223,8 +218,8 @@ class AMRTrainer:
             args=training_args,
             train_dataset=self.tokenized_dataset.get("train"),
             eval_dataset=self.tokenized_dataset.get("validation"),  # pyright: ignore
-            data_collator=data_collator,
-            compute_metrics=self._compute_metrics,
+            # data_collator=data_collator,
+            # compute_metrics=self._compute_metrics,
             callbacks=[
                 EarlyStoppingCallback(early_stopping_patience=3)
             ],  # Early stop nếu val không cải thiện
