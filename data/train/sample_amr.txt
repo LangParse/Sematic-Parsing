@@ -1,0 +1,117 @@
+#::snt Tôi yêu Việt Nam
+(y / yêu
+    :ARG0 (t / tôi)
+    :ARG1 (v / Việt_Nam))
+
+#::snt Cô ấy đang học tiếng Anh
+(h / học
+    :ARG0 (c / cô_ấy)
+    :ARG1 (t / tiếng_Anh)
+    :aspect (p / progressive))
+
+#::snt Hôm nay trời đẹp
+(đ / đẹp
+    :ARG1 (t / trời)
+    :time (h / hôm_nay))
+
+#::snt Anh ấy đi làm bằng xe buýt
+(đ / đi
+    :ARG0 (a / anh_ấy)
+    :ARG4 (l / làm)
+    :instrument (x / xe_buýt))
+
+#::snt Chúng tôi ăn cơm tối ở nhà hàng
+(ă / ăn
+    :ARG0 (c / chúng_tôi)
+    :ARG1 (c2 / cơm_tối)
+    :location (n / nhà_hàng))
+
+#::snt Em bé đang ngủ trong phòng
+(n / ngủ
+    :ARG0 (e / em_bé)
+    :location (p / phòng)
+    :aspect (p2 / progressive))
+
+#::snt Bố mẹ tôi sống ở Hà Nội
+(s / sống
+    :ARG0 (b / bố_mẹ
+        :poss (t / tôi))
+    :location (h / Hà_Nội))
+
+#::snt Sinh viên đọc sách trong thư viện
+(đ / đọc
+    :ARG0 (s / sinh_viên)
+    :ARG1 (s2 / sách)
+    :location (t / thư_viện))
+
+#::snt Cậu bé chơi bóng đá với bạn
+(c / chơi
+    :ARG0 (c2 / cậu_bé)
+    :ARG1 (b / bóng_đá)
+    :accompanier (b2 / bạn))
+
+#::snt Cô giáo dạy toán cho học sinh
+(d / dạy
+    :ARG0 (c / cô_giáo)
+    :ARG1 (t / toán)
+    :ARG2 (h / học_sinh))
+
+#::snt Ông ấy mua xe mới hôm qua
+(m / mua
+    :ARG0 (ô / ông_ấy)
+    :ARG1 (x / xe
+        :mod (m2 / mới))
+    :time (h / hôm_qua))
+
+#::snt Chúng ta cần bảo vệ môi trường
+(c / cần
+    :ARG0 (c2 / chúng_ta)
+    :ARG1 (b / bảo_vệ
+        :ARG1 (m / môi_trường)))
+
+#::snt Cô ấy nấu ăn rất ngon
+(n / nấu_ăn
+    :ARG0 (c / cô_ấy)
+    :manner (n2 / ngon
+        :degree (r / rất)))
+
+#::snt Anh trai tôi làm bác sĩ
+(l / làm
+    :ARG0 (a / anh_trai
+        :poss (t / tôi))
+    :ARG1 (b / bác_sĩ))
+
+#::snt Trẻ em thích xem phim hoạt hình
+(t / thích
+    :ARG0 (t2 / trẻ_em)
+    :ARG1 (x / xem
+        :ARG1 (p / phim_hoạt_hình)))
+
+#::snt Bà ngoại kể chuyện cho cháu
+(k / kể
+    :ARG0 (b / bà_ngoại)
+    :ARG1 (c / chuyện)
+    :ARG2 (c2 / cháu))
+
+#::snt Chúng tôi đi du lịch mùa hè
+(đ / đi_du_lịch
+    :ARG0 (c / chúng_tôi)
+    :time (m / mùa_hè))
+
+#::snt Cậu ấy chạy rất nhanh
+(c / chạy
+    :ARG0 (c2 / cậu_ấy)
+    :manner (n / nhanh
+        :degree (r / rất)))
+
+#::snt Mẹ tôi trồng hoa trong vườn
+(t / trồng
+    :ARG0 (m / mẹ
+        :poss (t2 / tôi))
+    :ARG1 (h / hoa)
+    :location (v / vườn))
+
+#::snt Học sinh làm bài tập về nhà
+(l / làm
+    :ARG0 (h / học_sinh)
+    :ARG1 (b / bài_tập_về_nhà))

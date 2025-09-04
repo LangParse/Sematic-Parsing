@@ -1,0 +1,102 @@
+# Local Testing Configuration - Small Dataset
+# ==========================================
+
+# Model Configuration - Optimized for local testing
+model:
+  model_name: "VietAI/vit5-base"
+  max_length: 256 # Reduced for faster processing
+  per_device_train_batch_size: 2 # Small batch size for local testing
+  per_device_eval_batch_size: 4 # Evaluation batch size
+  learning_rate: 5e-5
+  num_train_epochs: 2 # Just 2 epochs for testing
+  warmup_steps: 50 # Reduced warmup
+  weight_decay: 0.01
+  fp16: false # Disable FP16 for CPU compatibility
+  gradient_accumulation_steps: 1
+  eval_steps: 10 # Evaluate more frequently
+  save_steps: 10 # Save more frequently
+  logging_steps: 5 # Log more frequently
+  early_stopping_patience: 3
+  early_stopping_threshold: 0.001
+  adam_epsilon: 1e-8
+  max_grad_norm: 1.0
+  lr_scheduler_type: "linear"
+  evaluation_strategy: "steps"
+  save_total_limit: 2
+  load_best_model_at_end: true
+  metric_for_best_model: "eval_loss"
+  greater_is_better: false
+  report_to: "none"
+  run_name: "local-test-training"
+  seed: 42
+  dataloader_num_workers: 1
+  logging_dir: "logs/local_test"
+  output_dir: "models/amr_model_local"
+  max_input_length: 256
+  max_output_length: 256
+
+# Data Configuration - Small dataset
+data:
+  train_ratio: 0.7
+  val_ratio: 0.2
+  test_ratio: 0.1
+  max_samples: 100 # Limit to 100 samples for testing
+  shuffle_data: true
+  random_seed: 42
+  max_input_length: 256 # Reduced length
+  max_output_length: 256 # Reduced length
+  min_input_length: 3
+  min_output_length: 3
+  train_data_path: "data/train"
+  test_data_path: "data/test"
+  processed_data_dir: "data/processed"
+
+# Training Configuration - Local testing
+training:
+  use_wandb: false # Disable wandb for local testing
+  wandb_project: "amr-local-test"
+  run_name: "local-test-run"
+  resume_from_checkpoint: null
+  save_total_limit: 2 # Keep fewer checkpoints
+  load_best_model_at_end: true
+  metric_for_best_model: "eval_loss"
+  greater_is_better: false
+  evaluation_strategy: "steps"
+  lr_scheduler_type: "linear"
+  dataloader_num_workers: 1 # Single worker for local
+
+# Evaluation Configuration - Fast evaluation
+evaluation:
+  batch_size: 4
+  metrics: ["bleu", "exact_match"] # Only essential metrics
+  generate_report: true
+  save_predictions: true
+
+# Inference Configuration - Fast inference
+inference:
+  batch_size: 4
+  max_length: 256
+  num_beams: 2
+  do_sample: false
+  temperature: 1.0
+  format_output: true
+
+# Logging Configuration
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file_logging: true
+  console_logging: true
+  log_dir: "logs/local_test"
+
+# Path Configuration - Local paths
+paths:
+  data_dir: "data"
+  train_dir: "data/train"
+  test_dir: "data/test"
+  processed_dir: "data/processed_local"
+  model_dir: "models"
+  output_dir: "models/amr_model_local"
+  checkpoint_dir: "models/checkpoints_local"
+  log_dir: "logs/local_test"
+  cache_dir: ".cache"

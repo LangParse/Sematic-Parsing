@@ -1,0 +1,99 @@
+# Google Colab Configuration - GPU Optimized
+# ==========================================
+
+# Model Configuration - Optimized for Colab GPU
+model:
+  model_name: "VietAI/vit5-base"
+  max_length: 512 # Full length for better quality
+  per_device_train_batch_size: 8 # Larger batch for GPU
+  per_device_eval_batch_size: 16 # Even larger for evaluation
+  learning_rate: 3e-5 # Slightly lower for stability
+  num_train_epochs: 3 # Full training
+  warmup_steps: 500 # More warmup for stability
+  weight_decay: 0.01
+  fp16: true # Enable FP16 for GPU acceleration
+  gradient_accumulation_steps: 1
+  eval_steps: 250 # More frequent evaluation
+  save_steps: 250 # More frequent saving
+  logging_steps: 50 # More frequent logging
+  early_stopping_patience: 5 # More patience for better results
+  early_stopping_threshold: 0.001
+  adam_epsilon: 1e-8
+  max_grad_norm: 1.0
+  lr_scheduler_type: "linear"
+  evaluation_strategy: "steps"
+  save_total_limit: 3
+  load_best_model_at_end: true
+  metric_for_best_model: "eval_loss"
+  greater_is_better: false
+  report_to: "wandb" # Enable wandb for Colab
+  run_name: "colab-amr-training"
+  seed: 42
+  dataloader_num_workers: 2 # Moderate for Colab
+  logging_dir: "logs/tensorboard"
+
+# Data Configuration - Full dataset
+data:
+  train_ratio: 0.8
+  val_ratio: 0.15
+  test_ratio: 0.05
+  max_samples: null # Use all available data
+  shuffle_data: true
+  random_seed: 42
+  max_input_length: 512 # Full length
+  max_output_length: 512 # Full length
+  min_input_length: 3
+  min_output_length: 3
+  train_data_path: "data/train"
+  test_data_path: "data/test"
+  processed_data_dir: "data/processed"
+
+# Training Configuration - Colab optimized
+training:
+  use_wandb: true # Enable experiment tracking
+  wandb_project: "amr-colab-training"
+  run_name: "colab-amr-run"
+  resume_from_checkpoint: null
+  save_total_limit: 3
+  load_best_model_at_end: true
+  metric_for_best_model: "eval_loss"
+  greater_is_better: false
+  evaluation_strategy: "steps"
+  lr_scheduler_type: "linear"
+  dataloader_num_workers: 2
+
+# Evaluation Configuration - Comprehensive
+evaluation:
+  batch_size: 16 # Larger batch for faster evaluation
+  metrics: ["bleu", "rouge", "exact_match"] # All metrics
+  generate_report: true
+  save_predictions: true
+
+# Inference Configuration - High quality
+inference:
+  batch_size: 16
+  max_length: 512
+  num_beams: 4
+  do_sample: false
+  temperature: 1.0
+  format_output: true
+
+# Logging Configuration
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file_logging: true
+  console_logging: true
+  log_dir: "logs/colab"
+
+# Path Configuration - Colab paths
+paths:
+  data_dir: "data"
+  train_dir: "data/train"
+  test_dir: "data/test"
+  processed_dir: "data/processed"
+  model_dir: "models"
+  output_dir: "models/amr_colab_model"
+  checkpoint_dir: "models/checkpoints_colab"
+  log_dir: "logs/colab"
+  cache_dir: ".cache"

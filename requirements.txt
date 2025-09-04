@@ -1,0 +1,29 @@
+# Core ML libraries
+torch
+transformers
+datasets
+tokenizers
+
+# Data processing
+pandas
+numpy
+scikit-learn
+
+# Configuration
+PyYAML
+tqdm
+
+# Evaluation
+nltk
+
+# Visualization
+matplotlib
+seaborn
+
+# Utilities
+jsonlines
+typing-extensions
+
+# Deployment and Web Interface
+gradio
+huggingface_hub

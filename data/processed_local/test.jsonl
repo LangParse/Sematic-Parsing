@@ -1,0 +1,187 @@
+{"input": "- nó giúp ta giàu .", "output": "(g / giúp\n:pivot(n / nó)\n:result(g1 / giàu\n:pivot(t / ta)))"}
+{"input": "- thế ra em ở một hành tinh khác tới ?", "output": "(t1 / tới\n:modality(t / thế_ra)\n:agent(e / em)\n:initialLocation(h / hành_tinh\n:mod(k / khác)\n:quant 1)\n:mode interrogative)"}
+{"input": "\" khiếp gió luồn ...", "output": "(k / khiếp\n:theme-of(l / luồn\n:theme(g / gió)))"}
+{"input": "- phải chồng con này lên con kia ...", "output": "(o / obligate-01\n:topic(c / chồng\n:theme(c1 / con\n:mod(n / này))\n:manner(l / lên\n:theme(c2 / con\n:mod(k / kia)))))"}
+{"input": "giống đực , nó thường tổn hao đối với giống cái .", "output": "(t1 / tổn hao\n:pivot(g / giống\n:mod(đ / đực))\n:degree(t / thường)\n:goal(g1 / giống\n:mod(c / cái)))"}
+{"input": "dù điều này thật là vô lý khi tôi đang ở cách xa nơi người ở cả ngàn dặm và đang bị nguy đến tính mạng , tôi rút trong túi ra một cây bút và một mảnh giấy .", "output": "(r / rút\n:concession(v / vô_lý\n:domain(đ / điều\n:mod(n / này))\n:degree(t / thật)\n:time(a2 / and\n:op1(ở / ở\n:pivot(t1 / tôi)\n:tense(đ1 / đang)\n:op2(n4 / nguy\n:tense(đ2 / đang)\n:modality(b / bị)\n:topic(t2 / tính_mạng\n:prep(đ3 / đến)\n:poss t1)\n:domain t1)\n:location(r2 / relative-position\n:op1(n1 / nơi\n:mod(ở1 / ở\n:pivot(n2 / người)))\n:quant(d / distance-quantity\n:unit(d1 / dặm)\n:quant 1000)))))\n:location(t5 / túi\n:prep(t4 / trong))\n:direction(r1 / ra)\n:agent t1\n:theme(a / and\n:op1(b1 / bút\n:quant 1\n:classifier(c2 / cây))\n:op2(g / giấy\n:quant 1\n:classifier(m2 / mảnh))))"}
+{"input": "tinh cầu tiếp theo có một bợm nhậu cư trú .", "output": "(c / có\n:location(t / tinh_cầu\n:mod(t1 / tiếp_theo))\n:pivot(c1 / cư_trú\n:pivot-of(b / bợm\n:compound(n / nhậu)\n:quant 1)))"}
+{"input": "anh người vùng nào ?", "output": "(n / người\n:domain(a / anh)\n:location(wz1 / amr-unknown))"}
+{"input": "nên em cũng nạo vét cả quả núi lửa đã tắt nữa .", "output": "(n1 / nạo_vét\n:agent(e / em)\n:patient(n2 / núi_lửa\n:classifier(q / quả)\n:pivot-of(t / tắt\n:tense(đ / đã))))"}
+{"input": "nó hơn mọi người trong thể thao .", "output": "(h / hơn\n:domain(n / nó)\n:compared-to(n1 / người)\n:setting(t1 / thể thao\n:prep(t / trong)))"}
+{"input": "tóc tai em còn rũ rượi thế này ...", "output": "(r / rũ_rượi\n:pivot(t / tóc_tai\n:part-of(e / em)))"}
+{"input": "hãy nhìn lên trời .", "output": "(n / nhìn\n:direction(l / lên)\n:location(t / trời)\n:mode imperative)"}
+{"input": "ngày tôi còn là một cậu bé , ánh sáng của cây noel , tiếng nhạc của buổi lễ nửa đêm , những nụ cười dịu dàng cũng đã làm nên sự rực rỡ của món quà noel mà tôi được nhận .", "output": "(l2 / làm\n:time(b / bé\n:domain(t / tôi)\n:quant 1\n:classifier(c1 / cậu))\n:tense(đ / đã)\n:compound(n8 / nên)\n:result-arg1(s / sự\n:mod(r / rực_rỡ)\n:poss(q / quà\n:classifier(m1 / món)\n:wiki(n10 / noel\n:name(n11 / name\n:op1(n12 / noel)))\n:theme-of(n9 / nhận\n:agent(t2 / tôi))))\n:cause(a / and\n:op1(á / ánh_sáng\n:poss(c3 / cây\n:wiki(n2 / noel\n:name(n3 / name\n:op1(n4 / noel)))))\n:op2(t1 / tiếng\n:mod(n5 / nhạc)\n:poss(b1 / buổi\n:mod(l1 / lễ))\n:dayperiod(n6 / nửa_đêm))\n:op3(n7 / nụ_cười\n:mod(d / dịu_dàng))))"}
+{"input": "ông hoàng nhỏ đi qua sa mạc và chỉ gặp có một bông hoa .", "output": "(a / and\n:op1(đ / đi\n:agent(ô / ông_hoàng\n:mod(n / nhỏ))\n:compound(q / qua)\n:location(s / sa_mạc))\n:op2(g / gặp\n:degree(c / chỉ)\n:goal(h / hoa\n:quant 1\n:classifier(b / bông))\n:agent ô))"}
+{"input": "khoảng sáu hay bảy mống .", "output": "(m / mống\n:quant(k / khoảng\n:op1(o / or\n:op1 6\n:op2 7)))"}
+{"input": "cô ấy giỏi đánh nhau .", "output": "(g / giỏi\n:domain(c / cô)\n:mod(ấ / ấy)\n:theme(đ / đánh\n:theme(n / nhau)))"}
+{"input": "- loài người nơi ông , ông hoàng nhỏ nói , trồng năm nghìn hoa hồng cũng trong một khu vườn ... thế mà họ chẳng tìm thấy cái họ tìm ...", "output": "(n2 / nói\n:agent(ô1 / ông_hoàng\n:mod(n1 / nhỏ))\n:topic(w1 / and\n:op1(t / trồng\n:agent(l / loài_người\n:location(n / nơi\n:mod(ô / ông)))\n:theme(h / hoa_hồng\n:quant 5000)\n:location(k / khu\n:prep(t1 / trong)\n:mod(v / vườn)\n:quant 1))\n:op2(t3 / tìm\n:agent(h1 / họ)\n:polarity -\n:compound(t4 / thấy\n:theme(c2 / cái\n:theme-of(t5 / tìm\n:agent(h2 / họ)))))))"}
+{"input": "Anh ấy đi làm bằng xe buýt", "output": "(đ / đi\n:ARG0 (a / anh_ấy)\n:ARG4 (l / làm)\n:instrument (x / xe_buýt))"}
+{"input": "- cho nên chúng ăn cả những cây baobab chứ ?", "output": "(ă / ăn\n:agent(c1 / chúng)\n:modality(c2 / cả)\n:patient(c3 / cây\n:mod(b / baobab))\n:mode interrogative)"}
+{"input": "- đến bao giờ thì đủ ? ông hoàng nhỏ hỏi .", "output": "(h / hỏi\n:result(đ1 / đủ)\n:agent(ô / ông_hoàng\n:mod(n / nhỏ))\n:time(a / amr-unknown))"}
+{"input": "hoa chưa chăm chỉ .", "output": "(c1 / chăm chỉ\n:domain(h / hoa)\n:polarity -)"}
+{"input": "thế nhưng , ông hoàng nhỏ lại đáp nữa :", "output": "(c / contrast-01\n:ARG2(đ / đáp\n:agent(ô / ông_hoàng\n:mod(n1 / nhỏ))))"}
+{"input": "nam đi nhanh quá .", "output": "(đ / đi\n:manner(n1 / nhanh\n:degree(q / quá))\n:agent(p / person\n:name(n1 / name\n:op1(n / nam))\n:wiki -))"}
+{"input": "thuốc , ông ấy không hút .", "output": "(h / hút\n:theme(t / thuốc)\n:agent(ô / ông\n:mod(ấ / ấy))\n:polarity -)"}
+{"input": "ông ấy hiến đất cho làng .", "output": "(h / hiến\n:agent(ô / ông\n:mod(ấ / ấy))\n:theme(đ / đất)\n:beneficiary-arg2(l / làng))"}
+{"input": "em muốn mang con cừu của ta về đâu ?", "output": "(m / muốn\n:pivot(e / em)\n:topic(m1 / mang\n:theme(c1 / cừu\n:classifier(c / con)\n:poss(t / ta))\n:manner(v / về\n:finalLocation(a / amr-unknown))\n:agent e))"}
+{"input": "các phân tử thuộc bộ gen ti thể đều là adn vòng .", "output": "(a / adn\n:domain(p / phân tử\n:theme-of(t / thuộc\n:part-of(b / bộ\n:mod(g / gen\n:compound(t1 / ti thể)))\n:theme p))\n:mod(v / vòng))"}
+{"input": "loài hoa yếu đuối lắm .", "output": "(y / yếu_đuối\n:pivot(h / hoa\n:classifier(l / loài))\n:degree(l1 / lắm))"}
+{"input": "hàng triệu năm nay , cừu vẫn cứ ăn hoa .", "output": "(ă / ăn\n:agent(c / cừu)\n:patient(h1 / hoa)\n:duration(m / multiple\n:op1(t / temporal-quantity\n:unit(n / năm)\n:quant 1000000)))"}
+{"input": "hà nội là đầu não của phong trào cải cách ở bắc kỳ .", "output": "(đ / đầu não\n:part-of(p / phong trào\n:mod(c1 / cải cách))\n:location(l / local-region\n:name(n2 / name\n:op1(b / bắc)\n:op2(k / kỳ))\n:wiki(wz1 / Bắc_Kỳ))\n:domain(c / city\n:wiki(wz2 / Hà_Nội)\n:name(n1 / name\n:op1(h / hà)\n:op2(n / nội))))"}
+{"input": "ta không có thì giờ đâu mà mơ màng .", "output": "(c / có\n:pivot(t / ta)\n:theme(t1 / thì_giờ)\n:modality(đ / đâu)\n:purpose(m1 / mơ_màng\n:pivot t)\n:polarity -)"}
+{"input": "- xin chào , con rắn nói .", "output": "(n / nói\n:topic(x / xin\n:compound(c / chào))\n:agent(r / rắn\n:classifier(c1 / con)))"}
+{"input": "và những con người thì thiếu hẳn óc tưởng tượng .", "output": "(a /__and\n:op2(t1 / thiếu\n:domain(c / con_người)\n:degree(h / hẳn)\n:theme(ó / óc\n:mod(t2 / tưởng_tượng))))"}
+{"input": "tôi từ xa đến đây mà chưa được ngủ ...", "output": "(a / and\n:op1(đ / đến\n:agent(t / tôi)\n:initialLocation(x / xa)\n:finalLocation(đ1 / đây))\n:op2(n / ngủ\n:modality(đ2 / được\n:polarity -)\n:agent t))"}
+{"input": "- tôi sẽ có vẻ như đau ...", "output": "(đ / đau\n:domain(t / tôi)\n:tense(s / sẽ))"}
+{"input": "bao nhiêu năm nay , ta chưa được thấy ai ngáp .", "output": "(t1 / thấy\n:time(n / năm\n:quant(b / bao_nhiêu)\n:mod(n1 / nay))\n:agent(t / ta)\n:polarity -\n:goal(a / ai\n:agent-of(n2 / ngáp)))"}
+{"input": "- ái chà !", "output": "(á / ái_chà\n:mode expressive)"}
+{"input": "những quả cam này chín mọng .", "output": "(c1 / chín\n:quant(n / những\n:classifier(q / quả)\n:mod(n1 / này))\n:theme(c / cam)\n:manner(m / mọng))"}
+{"input": "chỗ anh rét lắm .", "output": "(r / rét\n:domain(c / chỗ\n:poss(a / anh))\n:degree(l / lắm))"}
+{"input": "- nghề của ta làm đây thật kinh khủng .", "output": "(k / kinh_khủng\n:domain(n / nghề\n:mod(l / làm\n:agent(t / ta)\n:location(đ / đây)))\n:degree(t1 / thật))"}
+{"input": "em liền kêu lên :", "output": "(k / kêu\n:agent(e / em)\n:manner(l / liền)\n:compound(l1 / lên))"}
+{"input": "nó xinh như chị nó .", "output": "(x / xinh\n:pivot(n / nó)\n:degree(wz1 / equal\n:compared-to(c / chị\n:poss n)))"}
+{"input": "Cô ấy nấu ăn rất ngon", "output": "(n / nấu_ăn\n:ARG0 (c / cô_ấy)\n:manner (n2 / ngon\n:degree (r / rất)))"}
+{"input": "vợ ông công nằm viện .", "output": "(n / nằm viện\n:agent(v / vợ\n:poss(wz1 / person\n:classifier(ô / ông)\n:name(wz2 / name\n:op1(c / công)))))"}
+{"input": "và anh đã yêu em .", "output": "(a1 / and\n:op2(y / yêu\n:pivot(a / anh)\n:tense(đ / đã)\n:beneficiary(e / em)))"}
+{"input": "những bạn bè gặp lại tôi rất lấy làm hài lòng thấy tôi còn sống .", "output": "(l1 / lấy_làm\n:pivot(b / bạn_bè\n:agent-of(g / gặp\n:compound(l / lại)\n:goal(t / tôi)))\n:degree(r / rất)\n:manner(h / hài_lòng)\n:cause(t1 / thấy\n:topic(s / sống\n:pivot t)\n:pivot b))"}
+{"input": "tôi có cảm giác vừa xảy ra một việc gì dị thường .", "output": "(c1 / cảm_giác\n:pivot(t / tôi)\n:topic(x / xảy\n:tense(v / vừa)\n:compound(r / ra)\n:theme(v1 / việc\n:mod(g / gì)\n:mod(d / dị_thường)\n:quant 1)))"}
+{"input": "- hãy làm bạn với tôi , tôi cô đơn lắm , em nói .", "output": "(n / nói\n:agent(e / em)\n:topic(a / and\n:op1(l / làm_bạn\n:accompanier(t / tôi)\n:mode imperative)\n:op2(c / cô_đơn\n:degree(l1 / lắm)\n:domain t)))"}
+{"input": "tôi đang bận những việc hệ trọng !", "output": "(b / bận\n:pivot(t / tôi)\n:tense(đ / đang)\n:theme(v / việc\n:mod(h / hệ_trọng))\n:mode expressive)"}
+{"input": "khi ông yêu một bông hoa ở trên một ngôi sao , thật là êm đềm , ban đêm , khi ông nhìn trời .", "output": "(ê / êm_đềm\n:condition(y / yêu\n:pivot(ô / ông)\n:theme(h / hoa\n:location(s / sao\n:prep(t / trên)\n:quant 1\n:classifier(n / ngôi))\n:quant 1\n:classifier(b / bông)))\n:time(n1 / nhìn\n:agent(ô1 / ông)\n:theme(t2 / trời\n:time(d / date-entity\n:dayperiod(b1 / ban_đêm)))))"}
+{"input": "trên trời , những ngôi sao đã tắt .", "output": "(t2 / tắt\n:location(t1 / trời\n:prep(t / trên))\n:theme(s / sao\n:quant(n / những)\n:classifier(n1 / ngôi))\n:tense(đ / đã))"}
+{"input": "- đúng , nhà địa lý nói .", "output": "(n1 / nói\n:topic(đ / đúng)\n:agent(n / nhà\n:compound(đ1 / địa_lý)))"}
+{"input": "xin nhớ là lúc ấy tôi đang ở cách mọi chỗ có người hàng ngàn dặm .", "output": "(n / nhớ\n:modality(x / xin)\n:topic(ở / ở\n:pivot(t / tôi)\n:tense(đ / đang)\n:location(r / relative-position\n:op1(c1 / chỗ\n:mod(c2 / có\n:theme(n1 / người))\n:mod(a / all))\n:quant(d2 / distance-quantity\n:unit(d / dặm)\n:quant 1000))\n:time(b / before))\n:mode imperative\n:polite+(wz3 / -))"}
+{"input": "- em không hay bị cảm nhiều thế đâu ...", "output": "(c / cảm\n:pivot(e / em)\n:frequency(h / hay\n:polarity -)\n:modality(b / bị)\n:degree(n / nhiều\n:mod(t / thế)))"}
+{"input": "xin chào ! có thể cho mình hỏi một câu .", "output": "(ax / multi-sentence\n:snt1(x / xin\n:compound(c / chào))\n:snt2(c2 / cho\n:mode interrogative\n:topic-of(h / hỏi\n:agent(m / mình)\n:theme(c3 / câu\n:quant 1))))"}
+{"input": "thuỷ thủ bỏ cá xuống dưới hầm tàu .", "output": "(b / bỏ\n:agent(t / thuỷ thủ)\n:theme(c / cá)\n:direction(x / xuống)\n:location(h / hầm tàu\n:prep(d / dưới)))"}
+{"input": "toà nhà cao 30 tầng .", "output": "(c / cao\n:theme(n / nhà\n:classifier(t / toà))\n:extent(t1 / tầng\n:quant 30))"}
+{"input": "và mọi con đường đều đưa đến chỗ có người ở .", "output": "(a / and\n:op2(đ2 / đưa\n:theme(đ / đường\n:classifier(c / con))\n:compound(đ3 / đến)\n:location(c1 / chỗ\n:pivot-of(c2 / có\n:theme(n / người\n:pivot-of(ở / ở))))))"}
+{"input": "ta hoàn toàn thiếu các nhà thám hiểm .", "output": "(t1 / thiếu\n:pivot(t / ta)\n:degree(h / hoàn_toàn)\n:theme(n / nhà\n:compound(t2 / thám_hiểm)))"}
+{"input": "nhà ngươi có thể xét xử con chuột già ấy .", "output": "(p / possible-01\n:agent(x / xét_xử\n:agent-of(n / nhà_ngươi)\n:patient(c2 / chuột\n:classifier(c1 / con)\n:mod(g / già)\n:mod(ấ / ấy))))"}
+{"input": "Hôm nay trời đẹp", "output": "(đ / đẹp\n:ARG1 (t / trời)\n:time (h / hôm_nay))"}
+{"input": "- chú em khâm phục ta nhiều thật chứ ?", "output": "(k / khâm_phục\n:pivot(c / chú\n:compound(e / em))\n:goal(t / ta)\n:degree(n / nhiều)\n:modality(t1 / thật)\n:mode interrogative)"}
+{"input": "chúng trở thành bạn thân .", "output": "(t / trở thành\n:pivot(c / chúng)\n:result(b / bạn\n:mod(t1 / thân)))"}
+{"input": "tôi cũng chẳng cần chị thăm nom .", "output": "(c2 / cần\n:pivot(t / tôi)\n:mod(c / cũng)\n:topic(t1 / thăm nom\n:agent(c3 / chị))\n:polarity -)"}
+{"input": "đức vua có thể trị vì trên cái gì ở đây ?", "output": "(p / possible-01\n:agent(đ / đức\n:compound(v / vua))\n:theme(t / trị_vì\n:theme(a / amr-unknown\n:prep(t1 / trên)\n:classifier(c1 / cái)))\n:location(đ1 / đây\n:prep(ở / ở)))"}
+{"input": "hắn có sưu tầm bươm bướm không ? \"", "output": "(s / sưu_tầm\n:agent(h / hắn)\n:theme(b / bươm_bướm)\n:mode interrogative)"}
+{"input": "lần đầu cách đây hai mươi hai năm do một con bọ hung chỉ có trời biết từ đâu rơi xuống .", "output": "(l / lần\n:time(c / cách\n:location(đ1 / đây)\n:quant(t3 / temporal-quantity\n:unit(n / năm)\n:quant 22))\n:cause(r / rơi\n:patient(b / bọ_hung\n:quant 1\n:classifier(c1 / con))\n:initialLocation(đ2 / đâu\n:topic(b1 / biết\n:degree(c2 / chỉ)\n:pivot(t / trời))\n:prep(t1 / từ))\n:direction(x / xuống))\n:ord(o / ordinal-entity\n:value 1))"}
+{"input": "nhưng người ta đòi hỏi nhà thám hiểm cung cấp bằng chứng .", "output": "(c1 / contrast-01\n:ARG2(đ / đòi_hỏi\n:agent(n1 / người_ta)\n:topic(c / cung_cấp\n:agent(n2 / nhà\n:compound(t / thám_hiểm))\n:theme(b / bằng_chứng))))"}
+{"input": "và tôi phải bắt trí thông minh của tôi làm việc dữ dội mới tự hiểu được vấn đề ấy .", "output": "(a / and\n:op2(o / obligate-01\n:topic(b / bắt\n:agent(t / tôi)\n:patient(l / làm_việc\n:patient-of(t1 / trí\n:mod(t2 / thông_minh)\n:poss t)\n:degree(d / dữ_dội)\n:purpose(h / hiểu\n:manner(t4 / tự)\n:manner(đ / được)\n:topic(v1 / vấn_đề\n:mod(ấ / ấy))\n:pivot t)))))"}
+{"input": "công nhân làm việc với cường độ cao .", "output": "(l / làm việc\n:agent(c / công nhân)\n:means(c1 / cường độ\n:degree(c2 / cao)))"}
+{"input": "nhưng mọi việc quen thuộc này buổi sáng hôm nay sao đối với em thật vô cùng êm đềm .", "output": "(c / contrast-01\n:ARG2(ê / êm_đềm\n:pivot(v / việc\n:mod(q / quen_thuộc)\n:mod(n1 / này))\n:source(e / em)\n:degree(v1 / vô_cùng)\n:time(d / date-entity\n:dayperiod(b / buổi\n:compound(s / sáng)\n:mod(h / hôm_nay)))))"}
+{"input": "chúng nhiễm đầy cả tinh cầu .", "output": "(n / nhiễm\n:pivot(c / chúng)\n:degree(đ / đầy)\n:location(t / tinh_cầu))"}
+{"input": "- sao em biết ?", "output": "(b / biết\n:pivot(e / em)\n:manner(a / arm-unknown))"}
+{"input": "em ấy là học sinh người dân tộc .", "output": "(h / học sinh\n:domain(e / em\n:mod(ấ / ấy))\n:mod(n / người\n:mod(d / dân tộc)))"}
+{"input": "- ồ ! tôi hiểu rồi , ông hoàng nhỏ nói .", "output": "(n1 / nói\n:topic(h / hiểu\n:mode expressive\n:pivot(t / tôi))\n:agent(ô / ông_hoàng\n:mod(n / nhỏ)))"}
+{"input": "chúng như năm trăm triệu cái chuông nhỏ ...", "output": "(r / resemble-01\n:theme(c / chúng)\n:compared-to(c2 / chuông\n:mod(n2 / nhỏ)\n:quant 500000000\n:classifier(c1 / cái)))"}
+{"input": "thằng bé thu tay về .", "output": "(t1 / thu\n:agent(b / bé\n:classifier(t / thằng))\n:theme(t2 / tay\n:part-of b)\n:direction(v / về))"}
+{"input": "Trẻ em thích xem phim hoạt hình", "output": "(t / thích\n:ARG0 (t2 / trẻ_em)\n:ARG1 (x / xem\n:ARG1 (p / phim_hoạt_hình)))"}
+{"input": "hãy vẽ con khác đi .", "output": "(v / vẽ\n:result-arg1(c / con\n:mod(k / khác))\n:modality(đ / đi)\n:mode imperative)"}
+{"input": "- trên tinh cầu của anh không có hổ , ông hoàng nhỏ nhận xét .", "output": "(n1 / nhận_xét\n:topic(c1 / có\n:location(t1 / tinh_cầu\n:prep(t / trên)\n:poss(a / anh))\n:polarity -\n:theme(h / hổ))\n:agent(ô / ông_hoàng\n:mod(n / nhỏ)))"}
+{"input": "con số ước tính khoảng một triệu cá thể .", "output": "(ư / ước tính\n:theme(c / con số)\n:result(k / khoảng\n:unit(c1 / cá thể)\n:quant 1000000))"}
+{"input": "- chuyện quái quỉ gì thế !", "output": "(c / chuyện\n:mod(q / quái_quỉ)\n:mod(g / gì\n:mod(t / thế))\n:mode expressive)"}
+{"input": "- ồ ! được cả thôi , em nói , trẻ con chúng hiểu hết .", "output": "(n / nói\n:agent(e / em)\n:topic(a / and\n:op1(ồ / ồ\n:mode expressive)\n:op2(đ / được)\n:op3(h / hiểu\n:pivot(c1 / chúng\n:domain(t1 / trẻ_con)))))"}
+{"input": "tôi đã đến hầu hết các nước trên thế giới .", "output": "(đ1 / đến\n:agent(t / tôi)\n:tense(đ / đã)\n:location(n / nước\n:mod(h / hầu hết)\n:part-of(t2 / thế giới\n:prep(t1 / trên))))"}
+{"input": "nhưng em cười dịu dàng :", "output": "(c1 / contrast-01\n:ARG2(c / cười\n:agent(e / em)\n:manner(d / dịu_dàng)))"}
+{"input": "- đúng là như thế .", "output": "(đ / đúng\n:manner(t / thế))"}
+{"input": "tôi biết làm thế nào để chỉ nhìn qua một cái là phân biệt được ngay Trung Quốc với Arizona .", "output": "(b / biết\n:pivot(t / tôi)\n:manner(l / làm\n:theme(t1 / thế_nào)\n:agent t)\n:purpose(p / phân_biệt\n:manner(n / nhìn\n:degree(c / chỉ)\n:degree(q / qua)\n:agent t)\n:manner(đ1 / được\n:degree(n1 / ngay))\n:pivot t\n:goal(a / and\n:op1(c3 / country\n:wiki(wz4 / Trung_Quốc)\n:name(n4 / name\n:op1(wz5 / Trung)\n:op2(wz6 / Quốc)))\n:op2(s / state\n:wiki(wz7 / Arizona)\n:name(n5 / name\n:op1(wz8 / Arizona))))))"}
+{"input": "năng suất đạt 10 tấn .", "output": "(đ / đạt\n:pivot(n / năng suất)\n:goal(wz1 / mass-quantity\n:quant 10\n:unit(t / tấn)))"}
+{"input": "tôi sẽ cố thử , hẳn thế , làm những bức chân dung càng giống càng hay .", "output": "(c / cố\n:agent(t / tôi)\n:tense(s / sẽ)\n:manner(t1 / thử)\n:modality(h / hẳn\n:compound(t2 / thế))\n:topic(l / làm\n:result-arg1(c1 / chân_dung\n:classifier(b / bức))\n:manner(r / resemble-01\n:degree(c2 / càng)\n:manner(h1 / hay\n:degree(c3 / càng)))\n:agent t))"}
+{"input": "tóm lại , đường còn xa không ?", "output": "(t / tóm lại\n:topic(c / còn\n:theme(đ / đường)\n:manner(x / xa)\n:mode interrogative))"}
+{"input": "loài người chiếm rất ít chỗ trên mặt đất .", "output": "(c / chiếm\n:pivot(l / loài_người)\n:theme(c1 / chỗ\n:mod(í / ít\n:degree(r / rất)))\n:location(m / mặt\n:prep(t / trên)\n:compound(đ / đất)))"}
+{"input": "- loài người ở đâu ? ông hoàng nhỏ lễ phép hỏi .", "output": "(h / hỏi\n:agent(ô / ông_hoàng\n:mod(n / nhỏ))\n:manner(l1 / lễ_phép)\n:topic(b / be-located-at-91\n:pivot(l / loài_người)\n:location(a / amr-unknown)\n:mode interrogative))"}
+{"input": "trưởng thôn tập trung dân lại để họp bàn .", "output": "(t1 / tập trung\n:agent(t / trưởng thôn)\n:accompanier(d / dân)\n:direction(l / lại)\n:purpose(h / họp bàn))"}
+{"input": "trái đất rộng lắm , rắn nói .", "output": "(n / nói\n:topic(r / rộng\n:degree(l / lắm)\n:domain(p / planet\n:name(n1 / name\n:op2(wz1 / Đất)\n:op1(wz2 / Trái))\n:wiki(wz3 / Trái_Đất)))\n:agent(r1 / rắn))"}
+{"input": "điếu thuốc lá của ông tắt rồi .", "output": "(t1 / tắt\n:theme(đ / điếu\n:mod(t / thuốc_lá)\n:poss(ô / ông))\n:modality(r / rồi))"}
+{"input": "bây giờ em lại đi trò chuyện với rắn !", "output": "(t / trò_chuyện\n:agent(e / em)\n:goal(r / rắn)\n:time(n / now))"}
+{"input": "em nói :", "output": "(n / nói\n:agent(e / em))"}
+{"input": "khi ông ta tắt cây đèn , ông ta ru bông hoa hay ngôi sao ấy ngủ .", "output": "(r / ru\n:time(t1 / tắt\n:agent(ô / ông\n:mod(t / ta))\n:patient(đ / đèn\n:classifier(c / cây)))\n:purpose(n1 / ngủ\n:agent o)\n:theme(o / or\n:op1(h / hoa\n:classifier(b / bông))\n:op2(s / sao\n:classifier(n / ngôi)\n:mod(ấ / ấy)))\n:agent ô)"}
+{"input": "ở đấy chỉ đủ chỗ cho một cây cột đèn và một người thắp đèn .", "output": "(đ1 / đủ\n:mod(c / chỉ)\n:location(c1 / chỗ)\n:goal(a / and\n:theme(c4 / cột\n:compound(đ2 / đèn)\n:quant 1\n:classifier(c3 / cây))\n:op2(p / person\n:agent-of(t / thắp\n:patient(đ3 / đèn))\n:quant 1)))"}
+{"input": "nó học giỏi để cha mẹ vui lòng .", "output": "(h / học\n:agent(n / nó)\n:degree(g / giỏi)\n:purpose(v / vui lòng\n:domain(c / cha mẹ)))"}
+{"input": "- chắc rồi .", "output": "(c / chắc\n:modality(r / rồi))"}
+{"input": "- nhưng sau đó điều lệnh thay đổi sao ?", "output": "(c / contrast-01\n:ARG2(t / thay_đổi\n:time(s / sau\n:mod(đ / đó))\n:theme(đ1 / điều_lệnh)\n:mode interrogative))"}
+{"input": "- ta làm gì à ?", "output": "(l / làm\n:agent(t / ta)\n:modality(à / à)\n:theme(a2 / amr-unknown))"}
+{"input": "chị đã chịu nhiều nỗi xót xa .", "output": "(c1 / chịu\n:pivot(c / chị)\n:tense(đ / đã)\n:theme(n1 / nỗi\n:quant(n / nhiều)\n:mod(x / xót xa)))"}
+{"input": "chúc một đêm tốt lành .", "output": "(c / chúc\n:topic(đ / đêm\n:mod(t / tốt_lành)\n:quant 1))"}
+{"input": "có phải ai cũng có được một người bạn thân đâu .", "output": "(p / phải\n:domain(c2 / có\n:pivot-of(a / ai)\n:modality(c1 / cũng)\n:manner(đ / được)\n:theme(n / người\n:mod(b / bạn\n:mod(t / thân))\n:quant 1))\n:modality(đ1 / đâu)\n:polarity -)"}
+{"input": "hắn còn tiền trong túi .", "output": "(c / còn\n:theme(h / hắn)\n:topic(t / tiền)\n:location(t2 / túi\n:prep(t1 / trong)))"}
+{"input": "như vậy đó , nếu các bạn bảo họ : \" ông hoàng bé nhỏ là có thật chứ , chứng cứ là cậu ta rất đẹp , cậu ta cười và cậu ta thích có một con cừu .", "output": "(b1 / bảo\n:manner(v / vậy\n:mod(đ / đó))\n:agent(b / bạn)\n:goal(h / họ)\n:topic(c1 / có\n:domain(ô / ông_hoàng\n:mod(b2 / bé_nhỏ))\n:degree(t / thật)\n:modality(c2 / chứ)\n:reason(c3 / chứng_cứ\n:example(a / and\n:op1(đ1 / đẹp\n:degree(r / rất)\n:domain ô)\n:op2(c6 / cười\n:agent ô)\n:op3(t4 / thích\n:topic(c8 / có\n:theme(c10 / cừu\n:quant 1\n:classifier(c9 / con))\n:pivot ô)\n:pivot ô)))))"}
+{"input": "khách hàng vay tiền ngân hàng .", "output": "(v / vay\n:agent(k / khách hàng)\n:theme(t / tiền)\n:source(n / ngân hàng))"}
+{"input": "con học giỏi vì cha mẹ .", "output": "(h / học\n:agent(c / con)\n:manner(g / giỏi)\n:cause(c1 / cha mẹ))"}
+{"input": "nhưng cái đó chẳng làm thay đổi ý kiến của tôi bao nhiêu .", "output": "(c3 / contrast-01\n:ARG2(l / làm\n:theme(c / cái\n:mod(đ / đó))\n:result-arg1(t / thay_đổi\n:theme(ý / ý_kiến\n:poss(t1 / tôi))\n:degree(b / bao_nhiêu)\n:agent t1)\n:polarity -))"}
+{"input": "tôi có hai cái bánh , em một .", "output": "(mx / multi-sentence\n:snt1(c / có\n:pivot(t / tôi)\n:theme(b / bánh\n:quant 2\n:classifier(c1 / cái)))\n:snt2(cx1 / có\n:pivot(e / em)\n:quant 1))"}
+{"input": "- à !", "output": "(à / à\n:mode expressive)"}
+{"input": "- xin chào , ông hoàng nhỏ nói bâng quơ .", "output": "(n1 / nói\n:topic(x / xin\n:compound(c / chào))\n:agent(ô / ông_hoàng\n:mod(n / nhỏ))\n:manner(b / bâng_quơ))"}
+{"input": "- mua những ngôi sao khác , nếu có người tìm thấy nữa .", "output": "(m / mua\n:theme(s / sao\n:classifier(n1 / ngôi)\n:mod(k / khác))\n:condition(c / có\n:result(t / tìm\n:agent(n3 / người)\n:compound(t1 / thấy)\n:theme s)\n:time(n4 / nữa)))"}
+{"input": "nhưng em trả lời tôi :", "output": "(c / contrast-01\n:ARG2(t / trả_lời\n:agent(e / em)\n:goal(t1 / tôi)))"}
+{"input": "anh cứ xem nơi nào bắt đầu có dấu chân của tôi ở trên cát .", "output": "(x / xem\n:agent(a / anh)\n:theme(n / nơi\n:mod(n1 / nào)\n:theme-of(b / bắt_đầu\n:theme(c1 / có\n:theme(d / dấu\n:mod(c2 / chân)\n:poss(t / tôi)\n:location(c4 / cát\n:prep(t1 / trên)))))))"}
+{"input": "- để quên , bợm nhậu trả lời .", "output": "(t / trả_lời\n:purpose(q / quên)\n:agent(b / bợm\n:compound(n / nhậu)))"}
+{"input": "bởi vì người ta có thể , cùng một lúc , vừa trung thành lại vừa lười biếng .", "output": "(c / cause-01\n:ARG0(p / possible\n:domain(n / người_ta)\n:theme(a / and\n:time(l / lúc\n:mod(c1 / cùng))\n:op1(t / trung_thành)\n:op2(l2 / lười_biếng)\n:domain n)))"}
+{"input": "và chúng rất thuận tiện cho việc nấu ăn buổi sáng .", "output": "(a / and\n:op2(t / thuận_tiện\n:pivot(c / chúng)\n:degree(r / rất)\n:purpose(v1 / việc\n:theme(n / nấu_ăn\n:time(d / date-entity\n:dayperiod(b / buổi\n:compound(s / sáng)))))))"}
+{"input": "cuộc vui chưa tàn .", "output": "(t / tàn\n:theme(c / cuộc\n:compound(v / vui))\n:polarity -)"}
+{"input": "ta có thể giúp đỡ cậu một ngày nào đó nếu cậu nhớ tinh cầu của cậu .", "output": "(p / possible-01\n:theme(g / giúp_đỡ\n:agent(t / ta)\n:beneficiary-arg1(c1 / cậu)\n:time(n / ngày\n:mod(n1 / nào\n:mod(đ / đó))))\n:condition(n3 / nhớ\n:theme(t1 / tinh_cầu\n:poss c1)\n:pivot c1))"}
+{"input": "tôi quyết ra_đi .", "output": "(r / ra_đi\n:agent(t / tôi)\n:modality(q / quyết))"}
+{"input": "anh có một tấm chắn gió nào không ?", "output": "(c / có\n:pivot(a / anh)\n:theme(t / tấm\n:theme-of(c1 / chắn\n:theme(g / gió))\n:mod(n / nào)\n:quant 1)\n:polarity(a1 / amr-unknown))"}
+{"input": "tôi đã rất buồn , nhưng tôi nói với họ : đó là vì mệt ...", "output": "(c / contrast-01\n:ARG1(b / buồn\n:pivot(t / tôi)\n:tense(đ / đã)\n:degree(r / rất))\n:ARG2(n1 / nói\n:goal(h / họ)\n:topic(m / mệt\n:domain t)\n:agent t))"}
+{"input": "tôi vẽ .", "output": "(v / vẽ\n:agent(t / tôi))"}
+{"input": "cậu chưa gửi tôi tiền .", "output": "(g / gửi\n:agent(c / cậu)\n:beneficiary-arg1(t / tôi)\n:theme(t1 / tiền)\n:polarity -)"}
+{"input": "chỉ có mỗi một con ấy thôi .", "output": "(c1 / có\n:degree(c / chỉ)\n:theme(c2 / con\n:mod(ấ / ấy)\n:quant 1)\n:modality(t / thôi))"}
+{"input": "cái bánh bị hỏng .", "output": "(h / hỏng\n:pivot(b / bánh\n:classifier(c / cái))\n:modality(b1 / bị))"}
+{"input": "một cái rọ mõm cho con cừu của tôi ...", "output": "(r / rọ_mõm\n:beneficiary(c3 / cừu\n:classifier(c2 / con)\n:poss(t / tôi))\n:quant 1\n:classifier(c / cái))"}
+{"input": "- hành tinh trái đất , nhà địa lý trả lời .", "output": "(t1 / trả_lời\n:topic(h / hành_tinh\n:wiki(wz1 / Trái_Đất)\n:name(n1 / name\n:op2(wz2 / Đất)\n:op1(wz3 / Trái)))\n:agent(n / nhà\n:compound(đ / địa_lý)))"}
+{"input": "- triệu cái gì ?", "output": "(a / amr-unknown\n:quant(t / triệu))"}
+{"input": "nhưng đừng có phí nhiều thì giờ của bạn vào hình phạt đó .", "output": "(c / contrast-01\n:ARG2(p / phí\n:theme(t / thì_giờ\n:quant(n1 / nhiều)\n:poss(b / bạn))\n:goal(h / hình_phạt\n:mod(đ1 / đó))\n:agent b\n:polarity -\n:mode imperative))"}
+{"input": "cụ thể : chúng ta phải đi ngay .", "output": "(c / cụ thể\n:topic(o / obligate-01\n:topic(đ / đi\n:agent(c1 / chúng ta)\n:manner(n / ngay))))"}
+{"input": "nhưng tại sao anh lúc nào cũng nói bí hiểm thế ?", "output": "(c / contrast-01\n:ARG2(n2 / nói\n:agent(a / anh)\n:manner(b / bí_hiểm)\n:purpose(a1 / amr-unknown)\n:time(a2 / always)\n:mode interrogative))"}
+{"input": "tôi dậy khi trời sáng .", "output": "(d / dậy\n:agent(t / tôi)\n:time(s / sáng\n:theme(t1 / trời)))"}
+{"input": "Ông ấy mua xe mới hôm qua", "output": "(m / mua\n:ARG0 (ô / ông_ấy)\n:ARG1 (x / xe\n:mod (m2 / mới))\n:time (h / hôm_qua))"}
+{"input": "chúng ta viết nên những điều vĩnh cửu .", "output": "(v / viết\n:agent(c / chúng_ta)\n:compound(n / nên)\n:result-arg1(đ / điều\n:mod(v1 / vĩnh_cửu)))"}
+{"input": "chỗ tôi bé lắm .", "output": "(b / bé\n:domain(c / chỗ\n:poss(t / tôi))\n:degree(l / lắm))"}
+{"input": "ông ta đã đánh giá sai lầm về thực lực của quân địch .", "output": "(đ1 / đánh giá\n:theme(ô / ông\n:mod(t / ta))\n:tense(đ / đã)\n:manner(s / sai lầm)\n:topic(t1 / thực lực\n:poss(q / quân\n:mod(đ2 / địch))))"}
+{"input": "nhà này rộng thênh thang .", "output": "(r / rộng\n:domain(n / nhà\n:mod(n1 / này))\n:degree(t / thênh thang))"}
+{"input": "chúc một buổi tối tốt lành .", "output": "(c / chúc\n:topic(b / buổi\n:compound(t / tối)\n:mod(t1 / tốt_lành)\n:quant 1))"}
+{"input": "- gọi như thế có nghĩa là \" đứng trước hiểm hoạ bị tiêu diệt \" .", "output": "(c / có\n:theme(g / gọi\n:manner(t / thế))\n:compound(n1 / nghĩa)\n:topic(đ / đứng\n:compound(t1 / trước)\n:setting(h / hiểm_hoạ\n:theme-of(t2 / tiêu_diệt\n:modality(b / bị)))))"}
+{"input": "ông mãi mãi là bạn tôi .", "output": "(h / have-rel-role-91\n:ARG0(ô / ông)\n:ARG2(b / bạn)\n:ARG1(t / tôi)\n:time(a / always))"}
+{"input": "bức phác thảo thứ hai của tôi nó như thế này :", "output": "(r / resemble-01\n:domain(p / phác_thảo\n:classifier(b / bức)\n:poss(t1 / tôi)\n:ord(o / ordinal-entity\n:value 2))\n:compared-to(t2 / thế\n:mod(n2 / này))\n:theme p\n:degree(e / equal))"}
+{"input": "hai bên đường không một bóng người .", "output": "(k / không\n:theme(b / bên\n:quant 2\n:mod(đ / đường))\n:theme(b1 / bóng\n:part-of(n / người)))"}
+{"input": "như thế , cuộc đời của nó sẽ tuỳ ở luật pháp của nhà ngươi .", "output": "(t1 / tuỳ\n:pivot(c / cuộc_đời\n:poss(n1 / nó))\n:tense(s / sẽ)\n:setting(l / luật_pháp\n:prep(ở / ở)\n:poss(n2 / nhà_ngươi)))"}
+{"input": "- buộc nó lại ?", "output": "(b / buộc\n:patient(n / nó)\n:mode interrogative)"}
+{"input": "mẹ giúp con học bài .", "output": "(g / giúp\n:agent(m / mẹ)\n:beneficiary(h / học\n:beneficiary-arg1(c / con)\n:theme(b / bài)))"}
+{"input": "- ta quản lý chúng .", "output": "(q / quản_lý\n:agent(t / ta)\n:theme(c / chúng))"}
+{"input": "ví dụ như phải ra lệnh cho tôi ra đi tức khắc .", "output": "(e / example\n:topic(o / obligate-01\n:topic(r / ra_lệnh\n:patient(t / tôi)\n:purpose(r1 / ra\n:compound(đ / đi)\n:manner(t1 / tức_khắc)\n:patient t))))"}
+{"input": "bụng tôi bị đau .", "output": "(đ / đau\n:theme(b / bụng\n:part-of(t / tôi))\n:modality(b1 / bị))"}
+{"input": "vì vua chú trọng nhất là uy quyền của mình phải được tuân theo .", "output": "(u / uy_quyền\n:domain(v1 / vua\n:domain-of(c / chú_trọng\n:degree(n / nhất)))\n:poss(m / mình)\n:patient-of(t / tuân\n:modality(p / phải)\n:compound(t1 / theo)))"}
+{"input": "ông để tôi bước một mình thôi .", "output": "(a / allow-01\n:agent(ô / ông)\n:theme(b / bước\n:agent(t / tôi)\n:manner(m / một_mình)))"}
+{"input": "việc này không khó đối với ông ấy .", "output": "(k1 / khó\n:domain(v / việc\n:mod(n / này))\n:goal(ô / ông\n:mod(ấ / ấy))\n:polarity -)"}
+{"input": "ông , ông sẽ có những ngôi sao trước đây không ai có ...", "output": "(c / có\n:pivot(ô1 / ông)\n:tense(s / sẽ)\n:theme(s1 / sao\n:classifier(n1 / ngôi)\n:pivot-of(r / resemble-01\n:theme(c1 / có\n:pivot(a / ai\n:polarity -)\n:time(b / before)))))"}
+{"input": "Bố mẹ tôi sống ở Hà Nội", "output": "(s / sống\n:ARG0 (b / bố_mẹ\n:poss (t / tôi))\n:location (h / Hà_Nội))"}
+{"input": "và môn địa lý , đúng như vậy , đã giúp tôi rất nhiều .", "output": "(a / and\n:op2(g / giúp\n:theme(m / môn\n:mod(đ / địa_lý))\n:degree(đ1 / đúng\n:manner(v1 / vậy))\n:tense(đ2 / đã)\n:beneficiary(t / tôi)\n:quant(n1 / nhiều\n:degree(r / rất))))"}
+{"input": "và tôi hiểu rằng tôi không thể chịu nổi ý nghĩ rồi đây không bao giờ còn nghe thấy tiếng cười này nữa .", "output": "(a / and\n:op2(h / hiểu\n:pivot(t / tôi)\n:topic(p / possible-01\n:agent(t1 / tôi)\n:theme(c / chịu\n:polarity -\n:degree(n / nổi)\n:theme(ý / ý_nghĩ)\n:result(n1 / nghe\n:time(r1 / rồi_đây)\n:polarity -\n:compound(t2 / thấy\n:theme(t3 / tiếng\n:compound(c2 / cười)\n:mod(n2 / này)))\n:time(wz1 / ever)\n:agent t)))))"}
+{"input": "nhưng bức vẽ của tôi chắc là kém đẹp hơn người mẫu nhiều .", "output": "(c3 / contrast-01\n:ARG2(đ / đẹp\n:domain(b / bức\n:compound(v / vẽ)\n:poss(t / tôi))\n:degree(k / kém\n:modality(c1 / chắc\n:compound(l / là))\n:quant(n2 / nhiều\n:degree(h / hơn)))\n:compared-to(n1 / người_mẫu)))"}
+{"input": "con học giỏi để cha mẹ vui lòng .", "output": "(h / học\n:agent(c / con)\n:manner(g / giỏi)\n:purpose(v / vui lòng\n:pivot(c1 / cha mẹ)))"}
+{"input": "hãy cố gắng mà sống hạnh phúc .", "output": "(c / cố_gắng\n:mode imperative\n:purpose(s / sống\n:manner(h1 / hạnh_phúc)))"}
+{"input": "chiến đấu hay là chết .", "output": "(o / or\n:op1(c / chiến đấu)\n:op2(c1 / chết))"}
+{"input": "tại sao tôi cứ phải khổ sở ...", "output": "(o / obligate-01\n:result-arg1(k / khổ_sở\n:pivot(t1 / tôi)\n:reason(wz1 / amr-unknown)))"}
+{"input": "không hề ngắm một vì sao .", "output": "(n / ngắm\n:polarity -\n:theme(s / sao\n:quant 1\n:classifier(v / vì)))"}
+{"input": "chúng ta sẽ làm việc trong hai ngày .", "output": "(l / làm việc\n:agent(c / chúng ta)\n:tense(s / sẽ)\n:duration(wz1 / temporal-quantity\n:quant 2\n:unit(n / ngày)))"}
+{"input": "chúng ta cần thực hiện biện pháp cách li với người bệnh .", "output": "(r / recommend-01\n:topic(t / thực hiện\n:agent(c / chúng ta)\n:topic(b / biện pháp\n:compound(c2 / cách li))\n:goal(n / người bệnh)))"}
+{"input": "tôi thấy người đàn ông mà em yêu .", "output": "(t1 / thấy\n:pivot(t / tôi)\n:goal(n / người\n:mod(đ / đàn ông)\n:goal-of(y / yêu\n:pivot(e / em))))"}
+{"input": "êm như ru .", "output": "(r / resemble-01\n:domain(ê / êm)\n:compared-to(r / ru)\n:degree(e / equal))"}
+{"input": "nó chăm ngoan là dấu hiệu tốt .", "output": "(d / dấu hiệu\n:domain(c / chăm ngoan\n:domain(n / nó))\n:mod(t / tốt))"}
+{"input": "- và khi ông đã nguôi rồi ( người ta bao giờ cũng nguôi đi ) , ông sẽ bằng lòng đã từng được quen biết tôi .", "output": "(a / and\n:op2(b1 / bằng_lòng\n:time(n / nguôi\n:pivot(ô / ông)\n:tense(đ / đã)\n:pivot-of(n2 / nguôi\n:pivot(n1 / người_ta)\n:time(a1 / always)))\n:tense(s / sẽ)\n:result-arg1(q / quen_biết\n:tense(đ2 / đã)\n:modality(đ3 / được)\n:theme(t1 / tôi)\n:pivot ô)\n:pivot ô))"}
+{"input": "nhưng , vì ngài rất tốt bụng , nên chỉ ra những cái lệnh hợp lý thôi .", "output": "(w1 / contrast-01\n:ARG2(r1 / ra\n:reason(t / tốt_bụng\n:domain(n1 / ngài)\n:degree(r / rất))\n:degree(c / chỉ)\n:theme(l / lệnh\n:classifier(c1 / cái)\n:mod(h / hợp_lý))))"}
+{"input": "lụt là hiện tượng nước tràn ngập một vùng đất .", "output": "(h / hiện tượng\n:domain(l / lụt)\n:mod(n / nước\n:theme-of(t / tràn ngập\n:location(v / vùng\n:mod(đ / đất))\n:theme n)))"}
+{"input": "chỉ nên nhìn chúng và thở hương thơm của chúng thôi .", "output": "(r / recommend-01\n:degree(c / chỉ)\n:theme(w1 / and\n:op1(n1 / nhìn\n:goal(c1 / chúng))\n:op2(t / thở\n:theme(h / hương\n:mod(t1 / thơm)\n:poss(c3 / chúng)))))"}
+{"input": "và ông ta lại thắp đèn lên .", "output": "(a / and\n:op2(t1 / thắp\n:agent(ô / ông\n:mod(t / ta))\n:manner(l / lại)\n:patient(đ / đèn)\n:manner(l1 / lên)))"}
+{"input": "phải rất lâu tôi mới biết em từ đâu đến .", "output": "(b / biết\n:condition(p / phải\n:time(l / lâu\n:degree(r / rất)))\n:pivot(t / tôi)\n:topic(đ1 / đến\n:agent(e / em)\n:initialLocation(đ / đâu\n:prep(t1 / từ))))"}
+{"input": "cái ấy đến nhẹ nhàng bằng những suy đoán ngẫu nhiên .", "output": "(đ / đến\n:theme(c / cái\n:mod(ấ / ấy))\n:manner(n / nhẹ_nhàng)\n:means(s / suy_đoán\n:mod(n2 / ngẫu_nhiên)))"}
+{"input": "để làm việc hiệu quả nhà máy cần trang bị máy móc hiện đai .", "output": "(c / cần\n:purpose(l / làm việc\n:manner(h / hiệu quả)\n:agent n)\n:pivot(n / nhà máy)\n:topic(t / trang bị\n:theme(m / máy móc\n:mod(h1 / hiện đai))\n:agent n))"}
+{"input": "- sao vậy ?", "output": "(v / vậy\n:cause(a / amr-unknown))"}
+{"input": "xu hướng này là hình thức giao lưu giữa các đoàn nghệ thuật .", "output": "(h / hình thức\n:domain(x / xu hướng\n:mod(n / này))\n:mod(đ / đoàn\n:agent-of(g / giao lưu)\n:mod(n1 / nghệ thuật)))"}
+{"input": "họ sống ở hà nội .", "output": "(s / sống\n:theme(h / họ)\n:location(p / place\n:prep(ở / ở)\n:wiki(h1 / Hà Nội\n:name(n2 / name\n:op1(h1 / hà)\n:op2(n / nội)))))"}
+{"input": "tôi thua nó nhiều mặt .", "output": "(t1 / thua\n:pivot(t / tôi)\n:theme(n / nó)\n:topic(m / mặt\n:mod(n1 / nhiều)))"}
+{"input": "bộ đôi công phá công sự của địch .", "output": "(c / công phá\n:agent(b / bộ đôi)\n:patient(c1 / công sự\n:poss(đ / địch)))"}
+{"input": "ví dụ như , khi lần đầu em thấy chiếc máy bay của tôi ( tôi sẽ không vẽ chiếc máy bay đâu , bức vẽ đó quá phức tạp đối với tôi ) em hỏi tôi :", "output": "(h / hỏi\n:condition(t / thấy\n:time(l / lần\n:ord(o / ordinal-entity\n:value 1))\n:pivot(e / em)\n:goal(m / máy_bay\n:classifier(c / chiếc)\n:poss(t1 / tôi)\n:goal-of(v1 / vẽ\n:tense(s / sẽ)\n:result-arg1(m1 / máy_bay\n:classifier(c2 / chiếc))\n:modality(đ1 / đâu)\n:cause(p / phức_tạp\n:domain(b / bức\n:compound(v2 / vẽ)\n:mod(đ2 / đó)\n:degree(q / quá)\n:topic(t3 / tôi)))\n:agent t1\n:polarity -)))\n:goal t1\n:agent e)"}
+{"input": "mưa như trút nước .", "output": "(r / resemble-01\n:theme(m / mưa)\n:compared-to(t / trút\n:theme(n1 / nước))\n:degree(e / equal))"}
+{"input": "vợ , ông ấy có hai bà .", "output": "(c / có\n:theme(v / vợ\n:quant 2\n:classifier(b / bà))\n:pivot(ô / ông\n:mod(ấ / ấy)))"}
+{"input": "ông sắp trở về nhà ông ...", "output": "(t / trở\n:agent(ô / ông)\n:tense(s / sắp)\n:compound(v / về)\n:location(n / nhà\n:poss(ô1 / ông)))"}
