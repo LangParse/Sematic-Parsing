@@ -73,6 +73,7 @@
 7. **Colab Training**: Use the Universal Notebook
 8. **🚀 Push to Hugging Face**: Deploy models to HF Hub
 9. **🌐 Gradio Web Interface**: Beautiful web UI for AMR parsing
+10. **📊 Progress Bars**: Beautiful progress tracking for all operations
 
 ### **🚀 Commands That Work**
 ```bash

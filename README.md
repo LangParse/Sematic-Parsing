@@ -13,6 +13,7 @@ A **production-ready** system for Abstract Meaning Representation (AMR) semantic
 - ✅ **Production Ready**: Proper logging, configuration management, and error handling
 - ✅ **Easy Deployment**: Push to Hugging Face Hub + Gradio web interface
 - ✅ **Web Interface**: Beautiful Gradio app with Vietnamese UI
+- ✅ **Progress Bars**: Beautiful tqdm progress bars for all operations
 
 ## 🎯 What's Tested & Working
 
@@ -55,9 +56,26 @@ python main.py process-data --input-dir data/train --output-dir data/processed -
 ```
 
 #### 2. Train the Model
+
+**Local Training:**
 ```bash
 python main.py train --config config/training_config.yaml
 ```
+
+**⚡ Google Colab Training (15-30 minutes):**
+```python
+# 1. Get T4/V100 GPU: Runtime > Change runtime type > GPU
+# 2. Clone and run optimized training
+!git clone https://github.com/your-repo/nlp-semantic-parsing.git
+%cd nlp-semantic-parsing
+!python colab_train.py
+
+# Or manual setup:
+!python optimize_colab.py  # Optimize for your GPU
+!python main.py train --config config/colab_fast_config.yaml
+```
+
+**See [COLAB_TRAINING_GUIDE.md](COLAB_TRAINING_GUIDE.md) for detailed Colab instructions.**
 
 #### 3. Evaluate the Model
 ```bash

@@ -1,0 +1,73 @@
+# Colab Fast Training Configuration
+# Optimized for Google Colab T4 GPU (15GB VRAM)
+# Expected training time: 15-30 minutes
+
+# Model Configuration - Optimized for speed
+model:
+  name: "VietAI/vit5-base"
+  max_input_length: 256      # Reduced from 512 for speed
+  max_output_length: 256     # Reduced from 512 for speed
+  early_stopping_patience: 2 # Quick early stopping
+  early_stopping_threshold: 0.01
+
+# Training Configuration - Fast training
+training:
+  # Batch configuration
+  batch_size: 8              # Optimal for T4 GPU
+  gradient_accumulation_steps: 4  # Effective batch size = 32
+  eval_batch_size: 16        # Larger eval batch for speed
+  
+  # Learning configuration
+  learning_rate: 3e-4        # Higher LR for faster convergence
+  num_epochs: 3              # Fewer epochs for speed
+  warmup_steps: 100          # Quick warmup
+  weight_decay: 0.01
+  
+  # Memory optimization
+  fp16: true                 # Mixed precision for 2x speedup
+  gradient_checkpointing: false  # Disabled for speed (uses more memory)
+  dataloader_num_workers: 2  # Parallel data loading
+  remove_unused_columns: true
+  
+  # Logging and saving
+  save_steps: 200            # Save more frequently
+  eval_steps: 200            # Evaluate more frequently  
+  logging_steps: 25          # Log every 25 steps
+  save_total_limit: 2        # Keep only 2 checkpoints
+  
+  # Optimization
+  adam_epsilon: 1e-8
+  max_grad_norm: 1.0
+  
+  # Early stopping for efficiency
+  load_best_model_at_end: true
+  metric_for_best_model: "eval_loss"
+  greater_is_better: false
+
+# Data Configuration - Optimized dataset
+data:
+  train_ratio: 0.85          # More training data
+  val_ratio: 0.15
+  test_ratio: 0.0            # Skip test split for faster training
+  max_samples: 800           # Limit samples for quick training
+  shuffle_data: true
+  random_seed: 42
+  max_input_length: 256      # Match model config
+  max_output_length: 256     # Match model config
+  min_input_length: 3
+  min_output_length: 3
+  train_data_path: "data/train"
+  test_data_path: "data/test"
+  processed_data_dir: "data/processed"
+
+# Path Configuration - Colab paths
+paths:
+  model_save_dir: "models/colab_fast_model"
+  log_dir: "logs/colab_fast"
+  data_dir: "data"
+  
+# Logging Configuration
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file_prefix: "colab_fast_training"

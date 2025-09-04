@@ -1,0 +1,73 @@
+# Colab Ultra Fast Configuration
+# For quick prototyping and testing
+# Expected training time: 5-10 minutes
+
+# Model Configuration - Ultra fast
+model:
+  name: "VietAI/vit5-base"
+  max_input_length: 128      # Very short sequences
+  max_output_length: 128     # Very short sequences
+  early_stopping_patience: 1 # Stop after 1 bad epoch
+  early_stopping_threshold: 0.05
+
+# Training Configuration - Ultra fast
+training:
+  # Batch configuration
+  batch_size: 16             # Large batch for speed
+  gradient_accumulation_steps: 2  # Effective batch size = 32
+  eval_batch_size: 32        # Large eval batch
+  
+  # Learning configuration
+  learning_rate: 5e-4        # High LR for very fast convergence
+  num_epochs: 2              # Only 2 epochs
+  warmup_steps: 50           # Very quick warmup
+  weight_decay: 0.01
+  
+  # Memory optimization
+  fp16: true                 # Mixed precision
+  gradient_checkpointing: false
+  dataloader_num_workers: 4  # Max parallel loading
+  remove_unused_columns: true
+  
+  # Logging and saving
+  save_steps: 100            # Save very frequently
+  eval_steps: 100            # Evaluate very frequently
+  logging_steps: 10          # Log every 10 steps
+  save_total_limit: 1        # Keep only 1 checkpoint
+  
+  # Optimization
+  adam_epsilon: 1e-8
+  max_grad_norm: 1.0
+  
+  # Early stopping
+  load_best_model_at_end: true
+  metric_for_best_model: "eval_loss"
+  greater_is_better: false
+
+# Data Configuration - Minimal dataset
+data:
+  train_ratio: 0.9           # Maximum training data
+  val_ratio: 0.1
+  test_ratio: 0.0            # No test split
+  max_samples: 200           # Very small dataset
+  shuffle_data: true
+  random_seed: 42
+  max_input_length: 128      # Match model config
+  max_output_length: 128     # Match model config
+  min_input_length: 3
+  min_output_length: 3
+  train_data_path: "data/train"
+  test_data_path: "data/test"
+  processed_data_dir: "data/processed"
+
+# Path Configuration
+paths:
+  model_save_dir: "models/colab_ultra_fast_model"
+  log_dir: "logs/colab_ultra_fast"
+  data_dir: "data"
+  
+# Logging Configuration
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file_prefix: "colab_ultra_fast_training"

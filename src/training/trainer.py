@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 import torch
+from tqdm.auto import tqdm
 
 try:
     import wandb
@@ -65,27 +66,115 @@ class AMRDataset(Dataset):
         }
 
 
-class LoggingCallback(TrainerCallback):
-    """Custom callback for enhanced logging."""
+class ProgressBarCallback(TrainerCallback):
+    """Custom callback with progress bar and enhanced logging."""
 
     def __init__(self, logger: logging.Logger):
         """Initialize callback with logger."""
         self.logger = logger
+        self.progress_bar = None
+        self.epoch_bar = None
+        self.current_epoch = 0
+        self.total_epochs = 0
+
+    def on_train_begin(self, args, state, control, model=None, **kwargs):
+        """Initialize progress bars at training start."""
+        self.total_epochs = int(args.num_train_epochs)
+        self.current_epoch = 0
+
+        # Create epoch progress bar
+        self.epoch_bar = tqdm(
+            total=self.total_epochs,
+            desc="🚀 Training Progress",
+            unit="epoch",
+            position=0,
+            leave=True,
+            bar_format="{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}, {rate_fmt}]",
+        )
+
+        self.logger.info(f"🎯 Starting training for {self.total_epochs} epochs")
+
+    def on_epoch_begin(self, args, state, control, model=None, **kwargs):
+        """Initialize step progress bar for each epoch."""
+        if hasattr(state, "max_steps") and state.max_steps > 0:
+            steps_per_epoch = state.max_steps // self.total_epochs
+        else:
+            # Estimate steps per epoch
+            steps_per_epoch = (
+                len(state.train_dataloader)
+                if hasattr(state, "train_dataloader")
+                else 100
+            )
+
+        # Create step progress bar
+        self.progress_bar = tqdm(
+            total=steps_per_epoch,
+            desc=f"📚 Epoch {self.current_epoch + 1}/{self.total_epochs}",
+            unit="step",
+            position=1,
+            leave=False,
+            bar_format="{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}, {postfix}]",
+        )
+
+    def on_step_end(self, args, state, control, model=None, logs=None, **kwargs):
+        """Update progress bar on each step."""
+        if self.progress_bar:
+            # Update postfix with current metrics
+            postfix = {}
+            if logs:
+                for key, value in logs.items():
+                    if isinstance(value, (int, float)) and key in [
+                        "train_loss",
+                        "learning_rate",
+                    ]:
+                        if key == "train_loss":
+                            postfix["loss"] = f"{value:.4f}"
+                        elif key == "learning_rate":
+                            postfix["lr"] = f"{value:.2e}"
+
+            self.progress_bar.set_postfix(postfix)
+            self.progress_bar.update(1)
 
     def on_log(self, args, state, control, model=None, logs=None, **kwargs):
         """Log training metrics."""
         if logs:
             step = state.global_step
+            # Only log important metrics to avoid spam
+            important_metrics = ["train_loss", "eval_loss", "learning_rate"]
             for key, value in logs.items():
-                if isinstance(value, (int, float)):
-                    self.logger.info(f"Step {step} - {key}: {value:.4f}")
+                if isinstance(value, (int, float)) and key in important_metrics:
+                    self.logger.debug(f"Step {step} - {key}: {value:.4f}")
 
     def on_epoch_end(self, args, state, control, model=None, logs=None, **kwargs):
-        """Log epoch completion."""
-        self.logger.info(f"✅ Completed epoch {state.epoch}")
+        """Update progress bars at epoch end."""
+        self.current_epoch += 1
+
+        # Close step progress bar
+        if self.progress_bar:
+            self.progress_bar.close()
+            self.progress_bar = None
+
+        # Update epoch progress bar
+        if self.epoch_bar:
+            epoch_info = f"Epoch {self.current_epoch}"
+            if logs:
+                if "eval_loss" in logs:
+                    epoch_info += f" | Val Loss: {logs['eval_loss']:.4f}"
+                if "train_loss" in logs:
+                    epoch_info += f" | Train Loss: {logs['train_loss']:.4f}"
+
+            self.epoch_bar.set_description(f"✅ {epoch_info}")
+            self.epoch_bar.update(1)
+
+        self.logger.info(f"✅ Completed epoch {self.current_epoch}/{self.total_epochs}")
 
     def on_train_end(self, args, state, control, model=None, logs=None, **kwargs):
-        """Log training completion."""
+        """Clean up progress bars at training end."""
+        if self.progress_bar:
+            self.progress_bar.close()
+        if self.epoch_bar:
+            self.epoch_bar.close()
+
         self.logger.info("🎉 Training completed successfully!")
 
 
@@ -272,7 +361,7 @@ class AMRTrainer:
         training_args = self.setup_training_arguments()
 
         # Setup callbacks
-        callbacks = [LoggingCallback(self.logger)]
+        callbacks = [ProgressBarCallback(self.logger)]
 
         early_stopping_patience = (
             int(self.config.model.early_stopping_patience)
